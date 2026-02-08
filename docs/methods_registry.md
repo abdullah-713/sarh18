@@ -1,5 +1,5 @@
 # SARH — Methods Registry (Technical Registry)
-> **Version:** 1.5.0 | **Updated:** 2026-02-08
+> **Version:** 1.6.0 | **Updated:** 2026-02-09
 > **Scope:** Documentation of every function, accessor, scope, constant, and mathematical formula
 
 ---
@@ -847,3 +847,48 @@
 
 ### Bilingual Additions
 - **File:** `lang/{ar,en}/install.php` — 15+ keys for installation command output
+
+---
+
+## §36. UI/UX Overhaul — Resource Architecture (v1.6.0)
+
+### UserResource (`App\Filament\Resources\UserResource`)
+
+| Method | Purpose |
+|--------|---------|
+| `getEloquentQuery()` | Branch scope — non-super-admin sees only their branch employees |
+| `form()` | Core Four schema: avatar (required), name_ar/en, email, password, basic_salary + collapsible organizational section |
+| `table()` | Avatar column, employee_id badge, name, email, branch, role, salary, security_level color-coded badge, status icon |
+| Hidden defaults | `working_days_per_month=22`, `working_hours_per_day=8`, `locale=ar`, `timezone=Asia/Riyadh` |
+
+### BranchResource (`App\Filament\Resources\BranchResource`)
+
+| Method | Purpose |
+|--------|---------|
+| `form()` | Identity section + Leaflet.js map picker (ViewField) + lat/lng/radius fields + collapsible shift/address/financial sections |
+| `table()` | Code badge, names, city, geofence_radius, shift times, grace period, employees_count, is_active icon |
+| Map Picker | `filament.forms.components.map-picker` — Alpine.js + Leaflet.js with bidirectional lat/lng/radius binding |
+
+### Map Picker Component (`resources/views/filament/forms/components/map-picker.blade.php`)
+
+| Feature | Implementation |
+|---------|-----------|
+| Map Engine | Leaflet.js v1.9.4 with OpenStreetMap tiles |
+| Marker | Draggable, updates lat/lng on dragend |
+| Click Handler | Map click places marker + updates coordinates |
+| Geofence Circle | Orange (#f97316), 15% opacity, radius synced with form field |
+| Watchers | `$watch('radius')`, `$watch('lat')`, `$watch('lng')` — bidirectional sync |
+| Default Center | Riyadh: 24.7136, 46.6753 |
+
+### AppServiceProvider — Level 10 Gates
+
+| Gate | Condition | Effect |
+|------|-----------|--------|
+| `Gate::before()` | `security_level === 10 \|\| is_super_admin` | Returns `true` for ALL authorization checks |
+| `access-whistleblower-vault` | `security_level >= 10` | Vault page access |
+| `access-trap-audit` | `security_level >= 10` | Trap audit page access |
+| `bypass-geofence` | `security_level >= 10 \|\| is_super_admin` | Attendance check-in from any location |
+
+### Bilingual Lang Files Added
+- **File:** `lang/{ar,en}/users.php` — 30+ keys for employee management UI
+- **File:** `lang/{ar,en}/branches.php` — 30+ keys for branch management UI

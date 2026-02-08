@@ -7,6 +7,7 @@ use App\Models\AttendanceLog;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Gate;
 
 class AttendanceService
 {
@@ -34,10 +35,10 @@ class AttendanceService
             throw new \RuntimeException(__('attendance.no_branch_assigned'));
         }
 
-        // 2 — Geofence validation
+        // 2 — Geofence validation (Level 10 bypasses)
         $geo = $this->geofencing->validatePosition($branch, $lat, $lng);
 
-        if (!$geo['within_geofence']) {
+        if (!$geo['within_geofence'] && !Gate::forUser($user)->allows('bypass-geofence')) {
             throw new OutOfGeofenceException($geo['distance_meters'], $branch->geofence_radius);
         }
 
@@ -56,7 +57,7 @@ class AttendanceService
             'check_in_latitude'        => $lat,
             'check_in_longitude'       => $lng,
             'check_in_distance_meters' => $geo['distance_meters'],
-            'check_in_within_geofence' => true,
+            'check_in_within_geofence' => $geo['within_geofence'] || Gate::forUser($user)->allows('bypass-geofence'),
             'check_in_ip'              => $ip,
             'check_in_device'          => $device,
         ]);

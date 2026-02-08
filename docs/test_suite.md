@@ -1,5 +1,5 @@
 # SARH — Validation Protocol (Test Suite)
-> **Version:** 1.5.0 | **Updated:** 2026-02-08
+> **Version:** 1.6.0 | **Updated:** 2026-02-09
 > **Scope:** Test cases, edge cases, validation results, and zero-side-effect verification
 
 ---
