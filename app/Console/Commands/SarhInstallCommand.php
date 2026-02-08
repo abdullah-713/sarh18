@@ -59,7 +59,11 @@ class SarhInstallCommand extends Command
         $this->newLine();
 
         $this->components->task(__('install.storage_link'), function () {
-            $this->callSilently('storage:link');
+            $publicStorage = public_path('storage');
+            $target = storage_path('app/public');
+            if (!is_link($publicStorage) && !file_exists($publicStorage)) {
+                @symlink($target, $publicStorage);
+            }
             return true;
         });
 
@@ -95,8 +99,8 @@ class SarhInstallCommand extends Command
         }
 
         if (empty(config('app.key'))) {
-            $this->components->error(__('install.no_app_key'));
-            return false;
+            $this->callSilently('key:generate', ['--force' => true]);
+            $this->components->warn(__('install.no_app_key'));
         }
 
         try {

@@ -63,6 +63,9 @@ class TrapsSeeder extends Seeder
             ],
         ];
 
-        DB::table('traps')->insert($traps);
+        DB::table('traps')->upsert($traps, ['trap_code'], [
+            'name_ar', 'name_en', 'description_ar', 'description_en',
+            'risk_weight', 'fake_response_type', 'is_active', 'updated_at',
+        ]);
     }
 }

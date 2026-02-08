@@ -49,7 +49,13 @@ if [ ! -f .env ]; then
     php artisan key:generate --force
     echo "  ✓ Environment configured & APP_KEY generated"
 else
-    echo "▸ [2/8] .env already exists — skipping"
+    echo "▸ [2/8] .env exists — ensuring APP_KEY is set..."
+    if ! grep -q "^APP_KEY=base64:" .env; then
+        php artisan key:generate --force
+        echo "  ✓ APP_KEY generated"
+    else
+        echo "  ✓ APP_KEY already set"
+    fi
 fi
 echo ""
 
