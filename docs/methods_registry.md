@@ -901,32 +901,32 @@
 
 | Method | Purpose |
 |--------|---------|
-| `run()` | Seeds 5 real Saudi branches (GPS coordinates + geofence) + 42 employees with `updateOrCreate` for idempotency |
-| Branch distribution | RUH-HQ: 12, JED-01: 10, DMM-01: 8, MED-01: 6, ABH-01: 5 |
+| `run()` | Seeds 5 branches (GPS coordinates + 17m geofence) + 36 users with `updateOrCreate` for idempotency |
+| Branch distribution | FADA-2: 11, FADA-1: 8, SARH-CORNER: 7, SARH-2: 5, SARH-HQ: 4 |
 | Default password | `Goolbx512!!` for all seeded users |
-| Super admin | `abdullah@sarh.app` — security_level=10, total_points=500 |
+| Super admin | `abdullah@sarh.app` (emp001) — security_level=10, total_points=500 |
 
 ### BranchLeaderboardPage (`App\Filament\Pages\BranchLeaderboardPage`)
 
 | Method | Purpose |
 |--------|---------|
-| `getBranches()` | Calculates discipline score per active branch: base 100, -2/late, -5/missed, +10/perfect employee, +0.1×points. Returns ranked array with 6-tier level assignment |
+| `getBranches()` | Ranks branches by **lowest financial loss** from tardiness. Calculates discipline score for level assignment: base 100, -2/late, -5/missed, +10/perfect employee, +0.1×points. Returns ranked array with 6-tier level assignment |
 | Level tiers | Legendary (≥150), Diamond (≥120), Gold (≥100), Silver (≥80), Bronze (≥60), Starter (<60) |
-| Trophy/Turtle | Rank #1 gets 🏆, last place gets 🐢 |
+| Trophy/Turtle | Leaderboard ranked by lowest financial loss; DailyNewsTicker shows per-branch 🏆 first check-in / 🐢 last check-in |
 
 ### DailyNewsTicker (`App\Filament\Widgets\DailyNewsTicker`)
 
 | Method | Purpose |
 |--------|---------|
-| `getNewsItems()` | Aggregates today's competition news: best/worst branch, attendance stats, top scorer, total employees |
-| `getBestBranchToday()` | Branch with lowest avg delay_minutes today |
-| `getWorstBranchToday()` | Branch with highest avg delay_minutes today |
+| `getNewsItems()` | Aggregates today's competition news: per-branch first/last check-in, attendance stats, top scorer, total employees |
+| `getTrophyFirstCheckin()` | Per-branch 🏆 first check-in today (earliest `check_in_at` from AttendanceLog per branch) |
+| `getTurtleLastCheckin()` | Per-branch 🐢 last check-in today (latest `check_in_at` from AttendanceLog per branch) |
 
 ### UserResource Points Action
 
 | Method | Purpose |
 |--------|---------|
-| `adjust_points` action | Filament table action — Level 10 enters points + reason → `total_points` increment + `points_transactions` insert + toast notification |
+| `adjust_points` action | Filament table action — Level 10 enters points + reason → `total_points` increment + `PointsTransaction` model record + toast notification |
 | Gate | `adjust-points` — requires security_level ≥ 10 or is_super_admin |
 
 ### AppServiceProvider — Competition Gates (v1.7.0)

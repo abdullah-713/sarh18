@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Hash;
 class ProjectDataSeeder extends Seeder
 {
     /**
-     * Seed 5 real Saudi branches + 42 employees.
-     * Idempotent — uses updateOrCreate on email/code.
+     * SARH v1.7.0 — Real branch & employee data.
+     * Idempotent via updateOrCreate on code/email.
      */
     public function run(): void
     {
@@ -19,84 +19,84 @@ class ProjectDataSeeder extends Seeder
 
         /*
         |----------------------------------------------------------------------
-        | 1. Branches — 5 Real Saudi Locations
+        | 1. Branches — 5 Real Locations (17m Geofence)
         |----------------------------------------------------------------------
         */
         $branches = [
             [
-                'code'                => 'RUH-HQ',
-                'name_ar'             => 'المقر الرئيسي — الرياض',
-                'name_en'             => 'Headquarters — Riyadh',
-                'city'                => 'الرياض',
-                'address'             => 'طريق الملك فهد، حي العليا',
-                'latitude'            => 24.7136,
-                'longitude'           => 46.6753,
-                'geofence_radius'     => 50,
-                'shift_start'         => '08:00',
-                'shift_end'           => '17:00',
-                'grace_period_minutes'=> 15,
-                'salary_budget'       => 500000,
-                'is_active'           => true,
+                'code'                 => 'SARH-HQ',
+                'name_ar'              => 'صرح الاتقان الرئيسي',
+                'name_en'              => 'SARH Al-Itqan HQ',
+                'city'                 => 'الرياض',
+                'address'              => 'صرح الاتقان — المقر الرئيسي',
+                'latitude'             => 24.572368,
+                'longitude'            => 46.602829,
+                'geofence_radius'      => 17,
+                'shift_start'          => '08:00',
+                'shift_end'            => '17:00',
+                'grace_period_minutes' => 15,
+                'salary_budget'        => 100000,
+                'is_active'            => true,
             ],
             [
-                'code'                => 'JED-01',
-                'name_ar'             => 'فرع جدة — البلد',
-                'name_en'             => 'Jeddah Branch — Al-Balad',
-                'city'                => 'جدة',
-                'address'             => 'شارع الملك عبدالعزيز، حي البلد',
-                'latitude'            => 21.4858,
-                'longitude'           => 39.1925,
-                'geofence_radius'     => 40,
-                'shift_start'         => '08:30',
-                'shift_end'           => '17:30',
-                'grace_period_minutes'=> 10,
-                'salary_budget'       => 350000,
-                'is_active'           => true,
+                'code'                 => 'SARH-CORNER',
+                'name_ar'              => 'صرح الاتقان كورنر',
+                'name_en'              => 'SARH Al-Itqan Corner',
+                'city'                 => 'الرياض',
+                'address'              => 'صرح الاتقان — كورنر',
+                'latitude'             => 24.572439,
+                'longitude'            => 46.603008,
+                'geofence_radius'      => 17,
+                'shift_start'          => '08:00',
+                'shift_end'            => '17:00',
+                'grace_period_minutes' => 15,
+                'salary_budget'        => 120000,
+                'is_active'            => true,
             ],
             [
-                'code'                => 'DMM-01',
-                'name_ar'             => 'فرع الدمام — الكورنيش',
-                'name_en'             => 'Dammam Branch — Corniche',
-                'city'                => 'الدمام',
-                'address'             => 'طريق الكورنيش، حي الشاطئ',
-                'latitude'            => 26.4207,
-                'longitude'           => 50.0888,
-                'geofence_radius'     => 35,
-                'shift_start'         => '07:30',
-                'shift_end'           => '16:30',
-                'grace_period_minutes'=> 10,
-                'salary_budget'       => 280000,
-                'is_active'           => true,
+                'code'                 => 'SARH-2',
+                'name_ar'              => 'صرح الاتقان 2',
+                'name_en'              => 'SARH Al-Itqan 2',
+                'city'                 => 'الرياض',
+                'address'              => 'صرح الاتقان — الفرع الثاني',
+                'latitude'             => 24.572262,
+                'longitude'            => 46.602580,
+                'geofence_radius'      => 17,
+                'shift_start'          => '08:00',
+                'shift_end'            => '17:00',
+                'grace_period_minutes' => 15,
+                'salary_budget'        => 80000,
+                'is_active'            => true,
             ],
             [
-                'code'                => 'MED-01',
-                'name_ar'             => 'فرع المدينة المنورة',
-                'name_en'             => 'Madinah Branch',
-                'city'                => 'المدينة المنورة',
-                'address'             => 'طريق الملك عبدالله، حي العزيزية',
-                'latitude'            => 24.4672,
-                'longitude'           => 39.6024,
-                'geofence_radius'     => 30,
-                'shift_start'         => '08:00',
-                'shift_end'           => '17:00',
-                'grace_period_minutes'=> 15,
-                'salary_budget'       => 200000,
-                'is_active'           => true,
+                'code'                 => 'FADA-1',
+                'name_ar'              => 'فضاء المحركات 1',
+                'name_en'              => 'Fada Al-Muharrikat 1',
+                'city'                 => 'الرياض',
+                'address'              => 'فضاء المحركات — الفرع الأول',
+                'latitude'             => 24.56968126,
+                'longitude'            => 46.61405911,
+                'geofence_radius'      => 17,
+                'shift_start'          => '08:00',
+                'shift_end'            => '17:00',
+                'grace_period_minutes' => 15,
+                'salary_budget'        => 150000,
+                'is_active'            => true,
             ],
             [
-                'code'                => 'ABH-01',
-                'name_ar'             => 'فرع أبها',
-                'name_en'             => 'Abha Branch',
-                'city'                => 'أبها',
-                'address'             => 'شارع الملك فيصل، حي المنسك',
-                'latitude'            => 18.2164,
-                'longitude'           => 42.5053,
-                'geofence_radius'     => 25,
-                'shift_start'         => '08:00',
-                'shift_end'           => '16:00',
-                'grace_period_minutes'=> 10,
-                'salary_budget'       => 150000,
-                'is_active'           => true,
+                'code'                 => 'FADA-2',
+                'name_ar'              => 'فضاء المحركات 2',
+                'name_en'              => 'Fada Al-Muharrikat 2',
+                'city'                 => 'الرياض',
+                'address'              => 'فضاء المحركات — الفرع الثاني',
+                'latitude'             => 24.566088,
+                'longitude'            => 46.621759,
+                'geofence_radius'      => 17,
+                'shift_start'          => '08:00',
+                'shift_end'            => '17:00',
+                'grace_period_minutes' => 15,
+                'salary_budget'        => 200000,
+                'is_active'            => true,
             ],
         ];
 
@@ -110,24 +110,26 @@ class ProjectDataSeeder extends Seeder
 
         /*
         |----------------------------------------------------------------------
-        | 2. Super Admin — Level 10 God Mode
+        | 2. Super Admin — Level 10 God Mode (Abdullah)
         |----------------------------------------------------------------------
         */
         User::updateOrCreate(
             ['email' => 'abdullah@sarh.app'],
             [
-                'name_ar'                => 'عبدالله الكريم',
-                'name_en'                => 'Abdullah Al-Kareem',
+                'name_ar'                => 'عبدالله',
+                'name_en'                => 'Abdullah',
+                'employee_id'            => 'emp001',
                 'password'               => $password,
                 'basic_salary'           => 45000,
                 'housing_allowance'      => 11250,
                 'transport_allowance'    => 3000,
                 'security_level'         => 10,
                 'is_super_admin'         => true,
-                'branch_id'              => $branchModels['RUH-HQ']->id,
+                'branch_id'              => $branchModels['SARH-HQ']->id,
                 'working_days_per_month' => 22,
                 'working_hours_per_day'  => 8,
                 'status'                 => 'active',
+                'employment_type'        => 'full_time',
                 'locale'                 => 'ar',
                 'timezone'               => 'Asia/Riyadh',
                 'total_points'           => 500,
@@ -136,78 +138,70 @@ class ProjectDataSeeder extends Seeder
 
         /*
         |----------------------------------------------------------------------
-        | 3. Employees — Distributed Across Branches
+        | 3. Employees — Exact Mapping per Directive
         |----------------------------------------------------------------------
         */
         $employees = [
-            // ── RUH-HQ (12 employees) ──────────────────────────────
-            ['name_ar' => 'فهد العتيبي',     'name_en' => 'Fahad Al-Otaibi',     'email' => 'fahad@sarh.app',    'basic_salary' => 12000, 'branch' => 'RUH-HQ'],
-            ['name_ar' => 'سارة القحطاني',   'name_en' => 'Sarah Al-Qahtani',    'email' => 'sarah@sarh.app',    'basic_salary' => 11000, 'branch' => 'RUH-HQ'],
-            ['name_ar' => 'محمد الغامدي',     'name_en' => 'Mohammed Al-Ghamdi',  'email' => 'mohammed@sarh.app', 'basic_salary' => 14000, 'branch' => 'RUH-HQ'],
-            ['name_ar' => 'نورة الشهري',     'name_en' => 'Noura Al-Shahri',     'email' => 'noura@sarh.app',    'basic_salary' => 10500, 'branch' => 'RUH-HQ'],
-            ['name_ar' => 'خالد الدوسري',    'name_en' => 'Khaled Al-Dosari',    'email' => 'khaled@sarh.app',   'basic_salary' => 13000, 'branch' => 'RUH-HQ'],
-            ['name_ar' => 'ريم الحربي',      'name_en' => 'Reem Al-Harbi',       'email' => 'reem@sarh.app',     'basic_salary' => 9500,  'branch' => 'RUH-HQ'],
-            ['name_ar' => 'عبدالرحمن المطيري','name_en' => 'Abdulrahman Al-Mutairi','email' => 'abdulrahman@sarh.app','basic_salary' => 15000, 'branch' => 'RUH-HQ'],
-            ['name_ar' => 'هيفاء الزهراني',  'name_en' => 'Haifa Al-Zahrani',    'email' => 'haifa@sarh.app',    'basic_salary' => 10000, 'branch' => 'RUH-HQ'],
-            ['name_ar' => 'تركي السبيعي',    'name_en' => 'Turki Al-Subaie',     'email' => 'turki@sarh.app',    'basic_salary' => 11500, 'branch' => 'RUH-HQ'],
-            ['name_ar' => 'منال العنزي',     'name_en' => 'Manal Al-Anazi',      'email' => 'manal@sarh.app',    'basic_salary' => 9000,  'branch' => 'RUH-HQ'],
-            ['name_ar' => 'ياسر الشمري',     'name_en' => 'Yasser Al-Shammari',  'email' => 'yasser@sarh.app',   'basic_salary' => 12500, 'branch' => 'RUH-HQ'],
-            ['name_ar' => 'أمل الرشيدي',     'name_en' => 'Amal Al-Rashidi',     'email' => 'amal@sarh.app',     'basic_salary' => 10000, 'branch' => 'RUH-HQ'],
-
-            // ── JED-01 (10 employees) ──────────────────────────────
-            ['name_ar' => 'عمر البلوي',      'name_en' => 'Omar Al-Balawi',      'email' => 'omar@sarh.app',     'basic_salary' => 11000, 'branch' => 'JED-01'],
-            ['name_ar' => 'لينا الجهني',     'name_en' => 'Lina Al-Juhani',      'email' => 'lina@sarh.app',     'basic_salary' => 10500, 'branch' => 'JED-01'],
-            ['name_ar' => 'بدر الحازمي',     'name_en' => 'Badr Al-Hazmi',       'email' => 'badr@sarh.app',     'basic_salary' => 13000, 'branch' => 'JED-01'],
-            ['name_ar' => 'دانة المالكي',    'name_en' => 'Dana Al-Malki',       'email' => 'dana@sarh.app',     'basic_salary' => 9500,  'branch' => 'JED-01'],
-            ['name_ar' => 'سلطان الثقفي',    'name_en' => 'Sultan Al-Thaqafi',   'email' => 'sultan@sarh.app',   'basic_salary' => 12000, 'branch' => 'JED-01'],
-            ['name_ar' => 'غادة الفيفي',     'name_en' => 'Ghada Al-Faifi',      'email' => 'ghada@sarh.app',    'basic_salary' => 10000, 'branch' => 'JED-01'],
-            ['name_ar' => 'مشاري الزهراني',  'name_en' => 'Mishari Al-Zahrani',  'email' => 'mishari@sarh.app',  'basic_salary' => 11500, 'branch' => 'JED-01'],
-            ['name_ar' => 'وعد القرشي',      'name_en' => 'Waad Al-Qurashi',     'email' => 'waad@sarh.app',     'basic_salary' => 9000,  'branch' => 'JED-01'],
-            ['name_ar' => 'ماجد العمري',     'name_en' => 'Majed Al-Omari',      'email' => 'majed@sarh.app',    'basic_salary' => 14000, 'branch' => 'JED-01'],
-            ['name_ar' => 'حنان السلمي',     'name_en' => 'Hanan Al-Sulami',     'email' => 'hanan@sarh.app',    'basic_salary' => 10000, 'branch' => 'JED-01'],
-
-            // ── DMM-01 (8 employees) ──────────────────────────────
-            ['name_ar' => 'أحمد الشهراني',   'name_en' => 'Ahmed Al-Shahrani',   'email' => 'ahmed@sarh.app',    'basic_salary' => 12000, 'branch' => 'DMM-01'],
-            ['name_ar' => 'فاطمة الخالدي',   'name_en' => 'Fatima Al-Khalidi',   'email' => 'fatima@sarh.app',   'basic_salary' => 10500, 'branch' => 'DMM-01'],
-            ['name_ar' => 'نايف العجمي',     'name_en' => 'Naif Al-Ajmi',        'email' => 'naif@sarh.app',     'basic_salary' => 11000, 'branch' => 'DMM-01'],
-            ['name_ar' => 'مريم البقمي',     'name_en' => 'Maryam Al-Bugami',    'email' => 'maryam@sarh.app',   'basic_salary' => 9500,  'branch' => 'DMM-01'],
-            ['name_ar' => 'عادل الحارثي',    'name_en' => 'Adel Al-Harthi',      'email' => 'adel@sarh.app',     'basic_salary' => 13500, 'branch' => 'DMM-01'],
-            ['name_ar' => 'خلود الرحيلي',    'name_en' => 'Kholoud Al-Ruhaili',  'email' => 'kholoud@sarh.app',  'basic_salary' => 10000, 'branch' => 'DMM-01'],
-            ['name_ar' => 'راشد المري',      'name_en' => 'Rashed Al-Marri',     'email' => 'rashed@sarh.app',   'basic_salary' => 11500, 'branch' => 'DMM-01'],
-            ['name_ar' => 'بشاير الهاجري',   'name_en' => 'Bashaier Al-Hajri',   'email' => 'bashaier@sarh.app', 'basic_salary' => 9000,  'branch' => 'DMM-01'],
-
-            // ── MED-01 (6 employees) ──────────────────────────────
-            ['name_ar' => 'عبدالعزيز اليامي','name_en' => 'Abdulaziz Al-Yami',   'email' => 'abdulaziz@sarh.app','basic_salary' => 11000, 'branch' => 'MED-01'],
-            ['name_ar' => 'جواهر النمري',    'name_en' => 'Jawaher Al-Namri',    'email' => 'jawaher@sarh.app',  'basic_salary' => 10000, 'branch' => 'MED-01'],
-            ['name_ar' => 'وليد الغامدي',    'name_en' => 'Waleed Al-Ghamdi',    'email' => 'waleed@sarh.app',   'basic_salary' => 12000, 'branch' => 'MED-01'],
-            ['name_ar' => 'شهد العسيري',     'name_en' => 'Shahd Al-Asiri',      'email' => 'shahd@sarh.app',    'basic_salary' => 9500,  'branch' => 'MED-01'],
-            ['name_ar' => 'سعود المغربي',    'name_en' => 'Saud Al-Maghrabi',    'email' => 'saud@sarh.app',     'basic_salary' => 13000, 'branch' => 'MED-01'],
-            ['name_ar' => 'ألماس الشريف',    'name_en' => 'Almas Al-Sharif',     'email' => 'almas@sarh.app',    'basic_salary' => 10500, 'branch' => 'MED-01'],
-
-            // ── ABH-01 (5 employees) ──────────────────────────────
-            ['name_ar' => 'حسن الشعبي',      'name_en' => 'Hassan Al-Sha\'bi',   'email' => 'hassan@sarh.app',   'basic_salary' => 10000, 'branch' => 'ABH-01'],
-            ['name_ar' => 'سمية القحطاني',   'name_en' => 'Sumaya Al-Qahtani',   'email' => 'sumaya@sarh.app',   'basic_salary' => 9500,  'branch' => 'ABH-01'],
-            ['name_ar' => 'طلال الشهري',     'name_en' => 'Talal Al-Shahri',     'email' => 'talal@sarh.app',    'basic_salary' => 11000, 'branch' => 'ABH-01'],
-            ['name_ar' => 'ريان الدوسري',    'name_en' => 'Rayan Al-Dosari',     'email' => 'rayan@sarh.app',    'basic_salary' => 12000, 'branch' => 'ABH-01'],
-            ['name_ar' => 'لمى الغامدي',     'name_en' => 'Lama Al-Ghamdi',      'email' => 'lama@sarh.app',     'basic_salary' => 9000,  'branch' => 'ABH-01'],
+            // FADA-1 — 8
+            ['عباس علي رمضان',    'Abbas Ali Ramadan',    'abbas@sarh.app',       'emp010', 4000, 'FADA-1'],
+            ['عبدالهادي يونس',    'Abdulhadi Younis',     'abdulhadi@sarh.app',   'emp012', 4000, 'FADA-1'],
+            ['محمد أفريدي',       'Mohammed Afridi',      'afridi@sarh.app',      'emp027', 4000, 'FADA-1'],
+            ['محمد بلال',         'Mohammed Bilal',       'bilal.m@sarh.app',     'emp028', 4000, 'FADA-1'],
+            ['محمد جلال',         'Mohammed Jalal',       'jalal@sarh.app',       'emp029', 4000, 'FADA-1'],
+            ['منذر محمد',         'Munther Mohammed',     'munther@sarh.app',     'emp031', 4000, 'FADA-1'],
+            ['مصطفى عوض سعد',    'Mustafa Awad Saad',    'mustafa@sarh.app',     'emp033', 4000, 'FADA-1'],
+            ['سالفادور ديلا',     'Salvador Dela',        'salvador@sarh.app',    'emp038', 4000, 'FADA-1'],
+            // SARH-CORNER — 7
+            ['أباوي',             'Abawe',                'abawe@sarh.app',       'emp009', 6000, 'SARH-CORNER'],
+            ['أرنوس',             'Arnous',               'arnous@sarh.app',      'emp016', 5000, 'SARH-CORNER'],
+            ['بلال',              'Bilal',                'bilal@sarh.app',       'emp018', 5000, 'SARH-CORNER'],
+            ['إيناي يو إس',      'Inay_us',              'inay.us@sarh.app',     'emp023', 5000, 'SARH-CORNER'],
+            ['مصعب',              'Musab',                'musab@sarh.app',       'emp032', 8000, 'SARH-CORNER'],
+            ['شعبان',             'Shaaban',              'shaaban@sarh.app',     'emp039', 5000, 'SARH-CORNER'],
+            ['وقاص',              'Wakas',                'wakas@sarh.app',       'emp041', 5000, 'SARH-CORNER'],
+            // SARH-2 — 5
+            ['أبو سليمان',        'Abu Suleiman',         'abu.suleiman@sarh.app','emp013', 4500, 'SARH-2'],
+            ['بخاري',             'Bukhari',              'bukhari@sarh.app',     'emp019', 4500, 'SARH-2'],
+            ['إسلام',             'Islam',                'islam@sarh.app',       'emp025', 4500, 'SARH-2'],
+            ['محسن',              'Mohsen',               'mohsen@sarh.app',      'emp030', 4500, 'SARH-2'],
+            ['صابر',              'Saber',                'saber@sarh.app',       'emp037', 4500, 'SARH-2'],
+            // SARH-HQ — 4
+            ['أمجد',              'Amjad',                'amjad@sarh.app',       'emp015', 4000, 'SARH-HQ'],
+            ['أيمن',              'Ayman',                'ayman@sarh.app',       'emp017', 4000, 'SARH-HQ'],
+            ['نجيب',              'Najeeb',               'najeeb@sarh.app',      'emp034', 4000, 'SARH-HQ'],
+            ['زاهر',              'Zaher',                'zaher@sarh.app',       'emp043', 4000, 'SARH-HQ'],
+            // FADA-2 — 11
+            ['عبد واي',           'Abd_y',                'abd.y@sarh.app',       'emp011', 5500, 'FADA-2'],
+            ['أفضل',              'Afzal',                'afzal@sarh.app',       'emp014', 5000, 'FADA-2'],
+            ['حبيب',              'Habib',                'habib@sarh.app',       'emp020', 5000, 'FADA-2'],
+            ['إمتي',              'Imti',                 'imti@sarh.app',        'emp021', 5000, 'FADA-2'],
+            ['إيناي',             'Inay',                 'inay@sarh.app',        'emp022', 5000, 'FADA-2'],
+            ['عرفان',             'Irfan',                'irfan@sarh.app',       'emp024', 5000, 'FADA-2'],
+            ['جهاد',              'Jihad',                'jihad@sarh.app',       'emp026', 8000, 'FADA-2'],
+            ['قتيبة',             'Qutaiba',              'qutaiba@sarh.app',     'emp035', 7000, 'FADA-2'],
+            ['ريشا',              'Risha',                'risha@sarh.app',       'emp036', 5000, 'FADA-2'],
+            ['شحاتة',             'Shehata',              'shehata@sarh.app',     'emp040', 6000, 'FADA-2'],
+            ['وسيم',              'Wassim',               'wassim@sarh.app',      'emp042', 3500, 'FADA-2'],
         ];
 
-        foreach ($employees as $emp) {
+        foreach ($employees as [$nameAr, $nameEn, $email, $empId, $salary, $branchCode]) {
             User::updateOrCreate(
-                ['email' => $emp['email']],
+                ['email' => $email],
                 [
-                    'name_ar'                => $emp['name_ar'],
-                    'name_en'                => $emp['name_en'],
+                    'name_ar'                => $nameAr,
+                    'name_en'                => $nameEn,
+                    'employee_id'            => $empId,
                     'password'               => $password,
-                    'basic_salary'           => $emp['basic_salary'],
-                    'housing_allowance'      => round($emp['basic_salary'] * 0.25),
+                    'basic_salary'           => $salary,
+                    'housing_allowance'      => round($salary * 0.25),
                     'transport_allowance'    => 1500,
                     'security_level'         => 1,
                     'is_super_admin'         => false,
-                    'branch_id'              => $branchModels[$emp['branch']]->id,
+                    'branch_id'              => $branchModels[$branchCode]->id,
                     'working_days_per_month' => 22,
                     'working_hours_per_day'  => 8,
                     'status'                 => 'active',
+                    'employment_type'        => 'full_time',
                     'locale'                 => 'ar',
                     'timezone'               => 'Asia/Riyadh',
                     'total_points'           => 0,
@@ -215,6 +209,6 @@ class ProjectDataSeeder extends Seeder
             );
         }
 
-        $this->command->info('✅ ProjectDataSeeder: 5 branches + 42 employees seeded.');
+        $this->command->info('ProjectDataSeeder: 5 branches (17m) + 1 super admin + 35 employees seeded.');
     }
 }

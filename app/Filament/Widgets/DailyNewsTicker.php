@@ -2,10 +2,10 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\AttendanceLog;
 use App\Models\Branch;
 use App\Models\User;
 use Filament\Widgets\Widget;
-use Illuminate\Support\Facades\DB;
 
 class DailyNewsTicker extends Widget
 {
@@ -16,64 +16,84 @@ class DailyNewsTicker extends Widget
     protected static ?int $sort = -1;
 
     /**
-     * Get today's news items for the ticker.
+     * Per-branch first check-in (trophy) and last check-in (turtle) for today.
+     * Uses check_in_at (datetime) and attendance_date (date) columns.
+     */
+    public function getBranchHighlights(): array
+    {
+        $today = now()->toDateString();
+        $branches = Branch::where('is_active', true)->get();
+        $highlights = [];
+
+        foreach ($branches as $branch) {
+            $first = AttendanceLog::where('branch_id', $branch->id)
+                ->where('attendance_date', $today)
+                ->whereNotNull('check_in_at')
+                ->orderBy('check_in_at', 'asc')
+                ->first();
+
+            $last = AttendanceLog::where('branch_id', $branch->id)
+                ->where('attendance_date', $today)
+                ->whereNotNull('check_in_at')
+                ->orderBy('check_in_at', 'desc')
+                ->first();
+
+            $firstUser = $first ? User::find($first->user_id) : null;
+            $lastUser  = $last  ? User::find($last->user_id)  : null;
+
+            // Only add if we have at least one check-in
+            if ($first) {
+                $highlights[] = [
+                    'branch'     => $branch->name_ar,
+                    'branch_en'  => $branch->name_en,
+                    'first_name' => $firstUser?->name_ar ?? '—',
+                    'first_time' => $first->check_in_at ? \Carbon\Carbon::parse($first->check_in_at)->format('H:i') : '—',
+                    'last_name'  => ($lastUser && $lastUser->id !== $firstUser?->id) ? $lastUser->name_ar : null,
+                    'last_time'  => ($last && $last->id !== $first->id) ? \Carbon\Carbon::parse($last->check_in_at)->format('H:i') : null,
+                ];
+            }
+        }
+
+        return $highlights;
+    }
+
+    /**
+     * Scrolling news items.
      */
     public function getNewsItems(): array
     {
         $items = [];
         $today = now()->toDateString();
 
-        // ── Trophy: Best branch today ──────────────────────────
-        $bestBranch = $this->getBestBranchToday();
-        if ($bestBranch) {
-            $items[] = [
-                'icon'  => '🏆',
-                'text'  => __('competition.ticker_trophy', ['branch' => $bestBranch['name']]),
-                'color' => 'text-yellow-600',
-            ];
-        }
-
-        // ── Turtle: Worst performing branch ────────────────────
-        $worstBranch = $this->getWorstBranchToday();
-        if ($worstBranch) {
-            $items[] = [
-                'icon'  => '🐢',
-                'text'  => __('competition.ticker_turtle', ['branch' => $worstBranch['name']]),
-                'color' => 'text-red-500',
-            ];
-        }
-
-        // ── Today's attendance stats ──────────────────────────
-        $todayLates = DB::table('attendance_logs')
-            ->whereDate('check_in_time', $today)
+        // Today attendance stats
+        $todayLates = AttendanceLog::where('attendance_date', $today)
             ->where('delay_minutes', '>', 0)
             ->count();
 
-        $todayOnTime = DB::table('attendance_logs')
-            ->whereDate('check_in_time', $today)
-            ->where('delay_minutes', '<=', 0)
+        $todayOnTime = AttendanceLog::where('attendance_date', $today)
+            ->where(function ($q) {
+                $q->where('delay_minutes', '<=', 0)->orWhereNull('delay_minutes');
+            })
+            ->whereNotNull('check_in_at')
             ->count();
 
         if ($todayOnTime + $todayLates > 0) {
             $items[] = [
-                'icon'  => '📊',
-                'text'  => __('competition.ticker_attendance', [
-                    'on_time' => $todayOnTime,
-                    'late'    => $todayLates,
-                ]),
+                'icon'  => "\u{1F4CA}",
+                'text'  => __('competition.ticker_attendance', ['on_time' => $todayOnTime, 'late' => $todayLates]),
                 'color' => 'text-blue-600',
             ];
         }
 
-        // ── Total employees ──────────────────────────────────
+        // Total active employees
         $totalEmployees = User::where('status', 'active')->count();
         $items[] = [
-            'icon'  => '👥',
+            'icon'  => "\u{1F465}",
             'text'  => __('competition.ticker_total_employees', ['count' => $totalEmployees]),
             'color' => 'text-gray-600',
         ];
 
-        // ── Top scorer this month ────────────────────────────
+        // Top scorer
         $topScorer = User::where('status', 'active')
             ->where('total_points', '>', 0)
             ->orderByDesc('total_points')
@@ -81,47 +101,12 @@ class DailyNewsTicker extends Widget
 
         if ($topScorer) {
             $items[] = [
-                'icon'  => '⭐',
-                'text'  => __('competition.ticker_top_scorer', [
-                    'name'   => $topScorer->name_ar,
-                    'points' => $topScorer->total_points,
-                ]),
+                'icon'  => "\u{2B50}",
+                'text'  => __('competition.ticker_top_scorer', ['name' => $topScorer->name_ar, 'points' => $topScorer->total_points]),
                 'color' => 'text-amber-600',
             ];
         }
 
         return $items;
-    }
-
-    private function getBestBranchToday(): ?array
-    {
-        $today = now()->toDateString();
-
-        $result = DB::table('attendance_logs')
-            ->join('branches', 'attendance_logs.branch_id', '=', 'branches.id')
-            ->whereDate('check_in_time', $today)
-            ->select('branches.id', 'branches.name_ar as name')
-            ->selectRaw('AVG(delay_minutes) as avg_delay')
-            ->groupBy('branches.id', 'branches.name_ar')
-            ->orderBy('avg_delay', 'asc')
-            ->first();
-
-        return $result ? ['name' => $result->name, 'avg_delay' => $result->avg_delay] : null;
-    }
-
-    private function getWorstBranchToday(): ?array
-    {
-        $today = now()->toDateString();
-
-        $result = DB::table('attendance_logs')
-            ->join('branches', 'attendance_logs.branch_id', '=', 'branches.id')
-            ->whereDate('check_in_time', $today)
-            ->select('branches.id', 'branches.name_ar as name')
-            ->selectRaw('AVG(delay_minutes) as avg_delay')
-            ->groupBy('branches.id', 'branches.name_ar')
-            ->orderBy('avg_delay', 'desc')
-            ->first();
-
-        return $result ? ['name' => $result->name, 'avg_delay' => $result->avg_delay] : null;
     }
 }

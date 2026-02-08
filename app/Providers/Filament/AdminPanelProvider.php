@@ -27,7 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName(__('app.brand_name'))
+            ->brandName('صرح الإتقان')
             ->colors([
                 'primary' => Color::Orange,
                 'danger'  => Color::Red,

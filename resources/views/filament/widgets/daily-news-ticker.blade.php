@@ -1,7 +1,47 @@
 <x-filament-widgets::widget>
     <x-filament::section>
-        @php $items = $this->getNewsItems(); @endphp
+        @php
+            $highlights = $this->getBranchHighlights();
+            $items = $this->getNewsItems();
+        @endphp
 
+        {{-- Per-Branch Trophy / Turtle Cards --}}
+        @if(count($highlights) > 0)
+            <div class="mb-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-lg">🏆</span>
+                    <h3 class="font-bold text-gray-700 dark:text-gray-200">{{ __('competition.trophy_first_title') }}</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    @foreach($highlights as $h)
+                        <div class="rounded-xl border p-4 bg-white dark:bg-gray-800 shadow-sm">
+                            <div class="font-bold text-sm text-orange-600 mb-2">{{ $h['branch'] }}</div>
+                            {{-- First check-in --}}
+                            <div class="flex items-center gap-2 text-sm">
+                                <span>🏆</span>
+                                <span class="text-green-600 font-semibold">{{ $h['first_name'] }}</span>
+                                <span class="text-gray-400 text-xs">({{ $h['first_time'] }})</span>
+                            </div>
+                            {{-- Last check-in --}}
+                            @if($h['last_name'])
+                                <div class="flex items-center gap-2 text-sm mt-1">
+                                    <span>🐢</span>
+                                    <span class="text-red-500 font-semibold">{{ $h['last_name'] }}</span>
+                                    <span class="text-gray-400 text-xs">({{ $h['last_time'] }})</span>
+                                </div>
+                            @else
+                                <div class="flex items-center gap-2 text-sm mt-1 text-gray-400">
+                                    <span>🐢</span>
+                                    <span>{{ __('competition.no_turtles') }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Scrolling Ticker --}}
         @if(count($items) > 0)
             <div class="overflow-hidden relative" dir="rtl">
                 <div class="flex items-center gap-2 mb-2">
@@ -13,7 +53,6 @@
                     x-data="{
                         offset: 0,
                         speed: 1,
-                        items: {{ json_encode(count($items)) }},
                         init() {
                             setInterval(() => {
                                 this.offset -= this.speed;

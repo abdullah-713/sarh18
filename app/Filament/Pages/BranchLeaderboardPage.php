@@ -2,10 +2,10 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\AttendanceLog;
 use App\Models\Branch;
 use App\Models\User;
 use Filament\Pages\Page;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class BranchLeaderboardPage extends Page
@@ -32,24 +32,14 @@ class BranchLeaderboardPage extends Page
     }
 
     /**
-     * Calculate branch discipline scores and rank them.
-     *
-     * Scoring Formula:
-     * - Base: 100 points per branch
-     * - Deductions: -2 per late check-in across all employees
-     * - Deductions: -5 per missed day (no check-in at all)
-     * - Bonus: +10 per employee with zero lates in the month
-     * - Bonus: +3 per employee total_points (gamification)
+     * Rank branches by LOWEST total financial loss (cost-per-minute * total delay).
+     * Uses AttendanceLog model with check_in_at / attendance_date columns.
      */
     public function getBranches(): array
     {
-        $branches = Branch::where('is_active', true)
-            ->withCount('users')
-            ->get();
-
+        $branches = Branch::where('is_active', true)->get();
         $startOfMonth = now()->startOfMonth();
-        $endOfMonth   = now()->endOfMonth();
-        $workingDaysElapsed = max(1, now()->day);
+        $today = now();
 
         $ranked = [];
 
@@ -59,84 +49,80 @@ class BranchLeaderboardPage extends Page
                 ->get();
 
             $employeeCount = $employees->count();
-            if ($employeeCount === 0) {
-                continue;
-            }
+            if ($employeeCount === 0) continue;
 
-            // Count late check-ins this month
-            $lateCheckins = DB::table('attendance_logs')
-                ->where('branch_id', $branch->id)
-                ->whereBetween('check_in_time', [$startOfMonth, $endOfMonth])
+            // Total delay minutes this month for the branch
+            $totalDelay = AttendanceLog::where('branch_id', $branch->id)
+                ->whereBetween('attendance_date', [$startOfMonth->toDateString(), $today->toDateString()])
+                ->where('delay_minutes', '>', 0)
+                ->sum('delay_minutes');
+
+            // Late check-ins count
+            $lateCheckins = AttendanceLog::where('branch_id', $branch->id)
+                ->whereBetween('attendance_date', [$startOfMonth->toDateString(), $today->toDateString()])
                 ->where('delay_minutes', '>', 0)
                 ->count();
 
-            // Count total check-ins this month
-            $totalCheckins = DB::table('attendance_logs')
-                ->where('branch_id', $branch->id)
-                ->whereBetween('check_in_time', [$startOfMonth, $endOfMonth])
-                ->count();
-
-            // Expected check-ins = employees × working days elapsed
-            $expectedCheckins = $employeeCount * $workingDaysElapsed;
-            $missedDays = max(0, $expectedCheckins - $totalCheckins);
-
-            // Employees with zero lates
-            $perfectEmployees = 0;
+            // Financial loss = sum of each employee's cost_per_minute * their delay
+            $totalLoss = 0;
             foreach ($employees as $emp) {
-                $hasLate = DB::table('attendance_logs')
-                    ->where('user_id', $emp->id)
-                    ->whereBetween('check_in_time', [$startOfMonth, $endOfMonth])
-                    ->where('delay_minutes', '>', 0)
-                    ->exists();
+                $monthlySalary = $emp->basic_salary + ($emp->housing_allowance ?? 0)
+                    + ($emp->transport_allowance ?? 0) + ($emp->other_allowances ?? 0);
+                $workingMinutes = ($emp->working_days_per_month ?: 22) * ($emp->working_hours_per_day ?: 8) * 60;
+                $costPerMinute = $workingMinutes > 0 ? $monthlySalary / $workingMinutes : 0;
 
-                if (!$hasLate) {
-                    $perfectEmployees++;
-                }
+                $empDelay = AttendanceLog::where('user_id', $emp->id)
+                    ->whereBetween('attendance_date', [$startOfMonth->toDateString(), $today->toDateString()])
+                    ->where('delay_minutes', '>', 0)
+                    ->sum('delay_minutes');
+
+                $totalLoss += round($costPerMinute * $empDelay, 2);
             }
 
-            // Total gamification points
+            // Perfect employees (zero lates)
+            $perfectEmployees = 0;
+            foreach ($employees as $emp) {
+                $hasLate = AttendanceLog::where('user_id', $emp->id)
+                    ->whereBetween('attendance_date', [$startOfMonth->toDateString(), $today->toDateString()])
+                    ->where('delay_minutes', '>', 0)
+                    ->exists();
+                if (!$hasLate) $perfectEmployees++;
+            }
+
             $totalPoints = $employees->sum('total_points');
 
-            // Calculate discipline score
-            $score = 100;
-            $score -= ($lateCheckins * 2);
-            $score -= ($missedDays * 5);
-            $score += ($perfectEmployees * 10);
-            $score += round($totalPoints * 0.1);
-
-            // Determine level
+            // Level based on total_loss
             $level = match (true) {
-                $score >= 150 => ['name' => __('competition.level_legendary'), 'icon' => '🏆', 'color' => 'text-yellow-500', 'bg' => 'bg-yellow-50 border-yellow-300'],
-                $score >= 120 => ['name' => __('competition.level_diamond'),   'icon' => '💎', 'color' => 'text-blue-500',   'bg' => 'bg-blue-50 border-blue-300'],
-                $score >= 100 => ['name' => __('competition.level_gold'),      'icon' => '🥇', 'color' => 'text-amber-500',  'bg' => 'bg-amber-50 border-amber-300'],
-                $score >= 80  => ['name' => __('competition.level_silver'),    'icon' => '🥈', 'color' => 'text-gray-400',   'bg' => 'bg-gray-50 border-gray-300'],
-                $score >= 60  => ['name' => __('competition.level_bronze'),    'icon' => '🥉', 'color' => 'text-orange-600', 'bg' => 'bg-orange-50 border-orange-300'],
-                default       => ['name' => __('competition.level_starter'),   'icon' => '🐢', 'color' => 'text-red-500',    'bg' => 'bg-red-50 border-red-300'],
+                $totalLoss == 0   => ['name' => __('competition.level_legendary'), 'icon' => "\u{1F3C6}", 'color' => 'text-yellow-500', 'bg' => 'bg-yellow-50 border-yellow-300'],
+                $totalLoss < 500  => ['name' => __('competition.level_diamond'),   'icon' => "\u{1F48E}", 'color' => 'text-blue-500',   'bg' => 'bg-blue-50 border-blue-300'],
+                $totalLoss < 1500 => ['name' => __('competition.level_gold'),      'icon' => "\u{1F947}", 'color' => 'text-amber-500',  'bg' => 'bg-amber-50 border-amber-300'],
+                $totalLoss < 3000 => ['name' => __('competition.level_silver'),    'icon' => "\u{1F948}", 'color' => 'text-gray-400',   'bg' => 'bg-gray-50 border-gray-300'],
+                $totalLoss < 5000 => ['name' => __('competition.level_bronze'),    'icon' => "\u{1F949}", 'color' => 'text-orange-600', 'bg' => 'bg-orange-50 border-orange-300'],
+                default            => ['name' => __('competition.level_starter'),   'icon' => "\u{1F422}", 'color' => 'text-red-500',    'bg' => 'bg-red-50 border-red-300'],
             };
 
             $ranked[] = [
                 'branch'            => $branch,
-                'score'             => $score,
+                'total_loss'        => $totalLoss,
+                'total_delay'       => $totalDelay,
                 'level'             => $level,
                 'employee_count'    => $employeeCount,
                 'late_checkins'     => $lateCheckins,
-                'missed_days'       => $missedDays,
                 'perfect_employees' => $perfectEmployees,
                 'total_points'      => $totalPoints,
             ];
         }
 
-        // Sort by score descending
-        usort($ranked, fn ($a, $b) => $b['score'] <=> $a['score']);
+        // Sort by LOWEST total_loss (best = least money wasted)
+        usort($ranked, fn ($a, $b) => $a['total_loss'] <=> $b['total_loss']);
 
-        // Assign rank + trophy/turtle
         foreach ($ranked as $i => &$item) {
             $item['rank'] = $i + 1;
             if ($i === 0) {
-                $item['badge'] = '🏆';
+                $item['badge'] = "\u{1F3C6}";
                 $item['badge_label'] = __('competition.trophy_winner');
             } elseif ($i === count($ranked) - 1 && count($ranked) > 1) {
-                $item['badge'] = '🐢';
+                $item['badge'] = "\u{1F422}";
                 $item['badge_label'] = __('competition.turtle_last');
             } else {
                 $item['badge'] = '';

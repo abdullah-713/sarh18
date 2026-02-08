@@ -338,26 +338,25 @@ class UserResource extends Resource
                             ->maxLength(500),
                     ])
                     ->action(function (User $record, array $data): void {
-                        $points = (int) $data['points'];
-                        $record->increment('total_points', $points);
+                        $delta = (int) $data['points'];
+                        $newTotal = max(0, $record->total_points + $delta);
+                        $record->update(['total_points' => $newTotal]);
 
-                        // Log in points_transactions if table exists
-                        if (\Schema::hasTable('points_transactions')) {
-                            \DB::table('points_transactions')->insert([
-                                'user_id'    => $record->id,
-                                'points'     => $points,
-                                'reason'     => $data['reason'],
-                                'awarded_by' => auth()->id(),
-                                'created_at' => now(),
-                                'updated_at' => now(),
-                            ]);
-                        }
+                        // Log via PointsTransaction model
+                        \App\Models\PointsTransaction::create([
+                            'user_id'    => $record->id,
+                            'points'     => $delta,
+                            'reason'     => $data['reason'],
+                            'awarded_by' => auth()->id(),
+                        ]);
 
                         Notification::make()
                             ->title(__('users.points_adjusted'))
+                            ->icon($delta >= 0 ? 'heroicon-o-arrow-trending-up' : 'heroicon-o-arrow-trending-down')
                             ->body(__('users.points_adjusted_body', [
-                                'points' => $points,
+                                'points' => ($delta >= 0 ? '+' : '') . $delta,
                                 'name'   => $record->name_ar,
+                                'total'  => $newTotal,
                             ]))
                             ->success()
                             ->send();

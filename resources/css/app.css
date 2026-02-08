@@ -62,4 +62,12 @@
     .stat-label {
         @apply text-sm text-gray-500 mt-1;
     }
+
+    .trophy-highlight {
+        @apply bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-400 rounded-lg p-3;
+    }
+
+    .turtle-highlight {
+        @apply bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-400 rounded-lg p-3;
+    }
 }

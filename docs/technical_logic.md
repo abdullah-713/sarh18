@@ -733,7 +733,7 @@ AttendanceService Bypass:
 | Date | Version | Changes |
 |------|---------|---------|
 | 2026-02-09 | 1.6.0 | UI/UX Overhaul: Orange theme, Tajawal universal font, collapsible sidebar, UserResource Core Four simplification with mandatory avatar, BranchResource Leaflet.js map picker with infinite geofence radius (1m–100km), Level 10 God Mode via Gate::before(), geofence bypass for super admins, complete bilingual lang files for users/branches |
-| 2026-02-08 | 1.7.0 | Competition Engine: ProjectDataSeeder (5 real Saudi branches + 42 employees), BranchLeaderboardPage with 6-tier Levels scoring, DailyNewsTicker with Trophy 🏆 / Turtle 🐢 system, manual points adjustment in UserResource, Cairo font replacing Tajawal, manage-competition + adjust-points gates, bilingual competition lang files |
+| 2026-02-08 | 1.7.0 | Competition Engine: ProjectDataSeeder (5 branches + 36 users, all 17m geofence), BranchLeaderboardPage ranked by lowest financial loss with 6-tier Levels, DailyNewsTicker with per-branch 🏆 first check-in / 🐢 last check-in, manual points adjustment via PointsTransaction model, Cairo font replacing Tajawal, manage-competition + adjust-points gates, bilingual competition lang files |
 
 ---
 
@@ -745,22 +745,26 @@ AttendanceService Bypass:
 
 | Entity | Count | Distribution |
 |--------|-------|-------------|
-| Branches | 5 | RUH-HQ (12), JED-01 (10), DMM-01 (8), MED-01 (6), ABH-01 (5) |
-| Super Admin | 1 | `abdullah@sarh.app` — Level 10, 500 initial points |
-| Employees | 41 | Real Saudi names, distributed by branch size |
-| **Total Users** | **42** | Including super admin |
+| Branches | 5 | FADA-2 (11), FADA-1 (8), SARH-CORNER (7), SARH-2 (5), SARH-HQ (4) |
+| Super Admin | 1 | `abdullah@sarh.app` (emp001) — Level 10, 500 initial points |
+| Employees | 35 | Real employee names, distributed by branch size |
+| **Total Users** | **36** | Including super admin |
 
 **Branch GPS Coordinates:**
 
-| Code | City | Latitude | Longitude | Radius |
+| Code | Name | Latitude | Longitude | Radius |
 |------|------|----------|-----------|--------|
-| RUH-HQ | الرياض | 24.7136 | 46.6753 | 50m |
-| JED-01 | جدة | 21.4858 | 39.1925 | 40m |
-| DMM-01 | الدمام | 26.4207 | 50.0888 | 35m |
-| MED-01 | المدينة | 24.4672 | 39.6024 | 30m |
-| ABH-01 | أبها | 18.2164 | 42.5053 | 25m |
+| SARH-HQ | صرح الاتقان الرئيسي | 24.572368 | 46.602829 | 17m |
+| SARH-CORNER | صرح الاتقان كورنر | 24.572439 | 46.603008 | 17m |
+| SARH-2 | صرح الاتقان 2 | 24.572262 | 46.602580 | 17m |
+| FADA-1 | فضاء المحركات 1 | 24.56968126 | 46.61405911 | 17m |
+| FADA-2 | فضاء المحركات 2 | 24.566088 | 46.621759 | 17m |
 
-### 14.2 Branch Discipline Scoring Formula
+### 14.2 Leaderboard Ranking & Level System
+
+**Ranking Method:** Branches are ranked by **lowest financial loss** from tardiness (not by score).
+
+**Discipline Score** (used for level assignment):
 
 ```
 Score = 100 (base)
@@ -783,16 +787,16 @@ Score = 100 (base)
 
 ### 14.3 Trophy & Turtle System
 
-- **Trophy 🏆:** Awarded to rank #1 branch (best discipline score)
-- **Turtle 🐢:** Assigned to last-place branch (worst discipline score)
-- **DailyNewsTicker:** Dashboard widget showing real-time competition updates
-- Ticker items: best/worst branch today, attendance stats, top scorer, total employees
+- **Trophy 🏆:** Per-branch first check-in today (earliest `check_in_at` per branch from `attendance_logs`)
+- **Turtle 🐢:** Per-branch last check-in today (latest `check_in_at` per branch)
+- **DailyNewsTicker:** Dashboard widget showing per-branch 🏆 first / 🐢 last check-in + attendance stats
+- Uses `AttendanceLog` model with `check_in_at` and `attendance_date` columns
 
 ### 14.4 Manual Points Adjustment
 
 - **Location:** UserResource table → "Adjust Points" action (⭐ icon)
 - **Gate:** `adjust-points` — Level 10 only
-- **Flow:** Enter points (positive=add, negative=deduct) + reason → `total_points` increment + `points_transactions` log
+- **Flow:** Enter points (positive=add, negative=deduct) + reason → `total_points` increment + `PointsTransaction` model record
 - **Notification:** Filament toast confirms adjustment with employee name and amount
 
 ### 14.5 Font Migration

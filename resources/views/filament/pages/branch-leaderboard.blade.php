@@ -1,19 +1,17 @@
 <x-filament-panels::page>
     <div class="space-y-6">
-        {{-- Header --}}
-        <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white">
-                {{ __('competition.leaderboard_title') }}
-            </h2>
-            <p class="text-gray-500 dark:text-gray-400 mt-2">
-                {{ __('competition.leaderboard_subtitle') }}
+        {{-- Orange Gradient Banner --}}
+        <div class="rounded-2xl bg-gradient-to-r from-orange-500 to-amber-400 p-6 text-center text-white shadow-lg">
+            <h2 class="text-3xl font-bold">{{ __('competition.leaderboard_title') }}</h2>
+            <p class="mt-1 opacity-90">{{ __('competition.leaderboard_subtitle') }}</p>
+            <p class="mt-1 text-sm opacity-75">
+                {{ __('competition.ranking_method') }}: {{ __('competition.ranking_by_loss') }}
             </p>
-            <p class="text-sm text-gray-400 mt-1">
-                {{ __('competition.period') }}: {{ now()->startOfMonth()->format('Y-m-d') }} → {{ now()->format('Y-m-d') }}
+            <p class="text-xs opacity-60 mt-1">
+                {{ __('competition.period') }}: {{ now()->startOfMonth()->format('Y-m-d') }} &rarr; {{ now()->format('Y-m-d') }}
             </p>
         </div>
 
-        {{-- Leaderboard Cards --}}
         @php $branches = $this->getBranches(); @endphp
 
         @if(count($branches) === 0)
@@ -42,7 +40,7 @@
                                         @endif
                                     </div>
                                     <p class="text-sm text-gray-500">
-                                        {{ $item['branch']->name_en }} — {{ $item['branch']->city }}
+                                        {{ $item['branch']->name_en }} &mdash; {{ $item['branch']->city }}
                                     </p>
                                     <span class="inline-block mt-1 px-3 py-1 rounded-full text-xs font-bold {{ $item['level']['color'] }} {{ $item['level']['bg'] }}">
                                         {{ $item['level']['name'] }}
@@ -55,13 +53,14 @@
                                 </div>
                             </div>
 
-                            {{-- Score --}}
+                            {{-- Financial Loss (primary metric) --}}
                             <div class="text-center">
-                                <div class="text-5xl font-black {{ $item['level']['color'] }}">
-                                    {{ $item['score'] }}
+                                <div class="text-4xl font-black {{ $item['total_loss'] == 0 ? 'text-green-600' : $item['level']['color'] }}">
+                                    {{ number_format($item['total_loss'], 0) }}
+                                    <span class="text-sm">{{ __('competition.sar') }}</span>
                                 </div>
                                 <div class="text-xs text-gray-500 mt-1">
-                                    {{ __('competition.score') }}
+                                    {{ __('competition.financial_loss') }}
                                 </div>
                             </div>
                         </div>
@@ -77,8 +76,8 @@
                                 <div class="text-xs text-gray-500">{{ __('competition.late_checkins') }}</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-lg font-bold text-red-700">{{ $item['missed_days'] }}</div>
-                                <div class="text-xs text-gray-500">{{ __('competition.missed_days') }}</div>
+                                <div class="text-lg font-bold text-orange-600">{{ number_format($item['total_delay']) }} {{ __('competition.min') }}</div>
+                                <div class="text-xs text-gray-500">{{ __('competition.total_delay') }}</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-lg font-bold text-green-600">{{ $item['perfect_employees'] }}</div>
@@ -96,12 +95,8 @@
             {{-- Scoring Legend --}}
             <div class="mt-8 rounded-xl bg-gray-50 dark:bg-gray-800 p-6 border">
                 <h4 class="font-bold text-gray-700 dark:text-gray-200 mb-3">{{ __('competition.scoring_legend') }}</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <div>📊 {{ __('competition.base_score') }}: <strong>100</strong></div>
-                    <div>⏰ {{ __('competition.late_penalty') }}: <strong class="text-red-500">-2</strong></div>
-                    <div>❌ {{ __('competition.missed_penalty') }}: <strong class="text-red-700">-5</strong></div>
-                    <div>✅ {{ __('competition.perfect_bonus') }}: <strong class="text-green-600">+10</strong></div>
-                    <div>⭐ {{ __('competition.points_bonus') }}: <strong class="text-amber-600">+0.1×</strong></div>
+                <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                    <p>{{ __('competition.ranking_method') }}: <strong>{{ __('competition.ranking_by_loss') }}</strong></p>
                 </div>
             </div>
         @endif

@@ -11,10 +11,18 @@ return [
     // Navigation
     'navigation_group'       => 'Competition & Excellence',
     'leaderboard_title'      => 'Branch Levels Leaderboard',
-    'leaderboard_subtitle'   => 'Branches ranked by discipline and performance — auto-refreshes monthly',
+    'leaderboard_subtitle'   => 'Branches ranked by lowest financial loss from tardiness',
 
     // Period
     'period'                 => 'Period',
+
+    // Ranking
+    'ranking_method'         => 'Ranking Method',
+    'ranking_by_loss'        => 'Lowest financial loss first',
+    'financial_loss'         => 'Financial Loss',
+    'total_delay'            => 'Total Delay',
+    'sar'                    => 'SAR',
+    'min'                    => 'min',
 
     // Levels
     'level_legendary'        => 'Legendary',
@@ -33,8 +41,8 @@ return [
     'total_points'           => 'Excellence Points',
 
     // Badges
-    'trophy_winner'          => '🏆 Champion — First Place',
-    'turtle_last'            => '🐢 Turtle — Last Place',
+    'trophy_winner'          => 'Champion - First Place',
+    'turtle_last'            => 'Turtle - Last Place',
 
     // Scoring Legend
     'scoring_legend'         => 'Scoring Formula',
@@ -46,11 +54,14 @@ return [
 
     // News Ticker
     'news_ticker_title'      => 'Latest News',
-    'ticker_trophy'          => 'Most disciplined branch today: :branch 🏆',
-    'ticker_turtle'          => 'Least disciplined branch today: :branch 🐢',
-    'ticker_attendance'      => 'Today\'s attendance: :on_time on time | :late late',
+    'trophy_first_title'     => 'First & Last Check-in Today - Per Branch',
+    'turtle_last_title'      => 'Last Check-in Today',
+    'no_turtles'             => 'Only one check-in',
+    'ticker_trophy'          => 'Most disciplined branch today: :branch',
+    'ticker_turtle'          => 'Least disciplined branch today: :branch',
+    'ticker_attendance'      => 'Today attendance: :on_time on time | :late late',
     'ticker_total_employees' => 'Total active employees: :count',
-    'ticker_top_scorer'      => 'Top scorer: :name (:points points) ⭐',
+    'ticker_top_scorer'      => 'Top scorer: :name (:points pts)',
 
     // Empty States
     'no_branches'            => 'No active branches to rank',
