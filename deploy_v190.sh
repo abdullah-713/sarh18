@@ -32,9 +32,9 @@ echo "=============================================" | tee -a "$LOG"
 # ──────────────────────────────────────────────────────────────────────────────
 info "Step 1/9: Preflight checks..."
 
-# Verify PHP 8.3 exists
-if ! [ -x "$PHP" ]; then
-    fail "PHP 8.3 not found at $PHP"
+# Verify PHP exists and is executable
+if ! command -v $PHP &> /dev/null; then
+    fail "PHP not found in PATH. Ensure 'php' is available."
 fi
 
 PHP_VERSION=$($PHP -v | head -n1)
