@@ -197,28 +197,9 @@ for file in robots.txt favicon.ico; do
     fi
 done
 
-# Deploy bridge index.php (absolute path resolution)
-cat > "$PUBLIC_HTML/index.php" << 'BRIDGE_EOF'
-<?php
-
-use Illuminate\Http\Request;
-
-define('LARAVEL_START', microtime(true));
-
-// Maintenance mode check
-if (file_exists($maintenance = '/home/u850419603/sarh/storage/framework/maintenance.php')) {
-    require $maintenance;
-}
-
-// Register the Composer autoloader (absolute path)
-require '/home/u850419603/sarh/vendor/autoload.php';
-
-// Bootstrap Laravel and handle the request (absolute path)
-(require_once '/home/u850419603/sarh/bootstrap/app.php')
-    ->handleRequest(Request::capture());
-BRIDGE_EOF
-
-success "Bridge index.php deployed to $PUBLIC_HTML"
+# Deploy index.php (already contains absolute paths from repo)
+cp -f "$PROJECT/public/index.php" "$PUBLIC_HTML/index.php"
+success "Bridge index.php deployed to $PUBLIC_HTML (absolute paths)"
 
 # Deploy .htaccess if it exists
 if [ -f "$PROJECT/public/.htaccess" ]; then
