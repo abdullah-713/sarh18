@@ -1,7 +1,12 @@
 <x-filament-panels::page>
     <div class="space-y-6">
-        {{-- Hero: Branch Progress Widget (Weekly Stats) --}}
+        {{-- Hero: Personal Mirror (المرآة الشخصية) --}}
         <div class="animate-fadeInUp">
+            @livewire(\App\Filament\App\Widgets\PersonalMirrorWidget::class)
+        </div>
+
+        {{-- Hero: Branch Progress Widget (Weekly Stats) --}}
+        <div class="animate-fadeInUp" style="animation-delay: 0.05s">
             <livewire:branch-progress-widget />
         </div>
 

@@ -30,6 +30,11 @@ class Branch extends Model
         'is_active',
         'monthly_salary_budget',
         'monthly_delay_losses',
+        'cost_center_code',
+        'annual_budget',
+        'target_attendance_rate',
+        'max_acceptable_loss_percent',
+        'vpm_target',
     ];
 
     protected function casts(): array
@@ -42,6 +47,10 @@ class Branch extends Model
             'is_active'            => 'boolean',
             'monthly_salary_budget'=> 'decimal:2',
             'monthly_delay_losses' => 'decimal:2',
+            'annual_budget'              => 'decimal:2',
+            'target_attendance_rate'     => 'decimal:2',
+            'max_acceptable_loss_percent'=> 'decimal:2',
+            'vpm_target'                 => 'decimal:2',
         ];
     }
 
@@ -74,6 +83,21 @@ class Branch extends Model
     public function holidays(): HasMany
     {
         return $this->hasMany(Holiday::class);
+    }
+
+    public function payrolls(): HasMany
+    {
+        return $this->hasMany(Payroll::class);
+    }
+
+    public function analyticsSnapshots(): HasMany
+    {
+        return $this->hasMany(AnalyticsSnapshot::class);
+    }
+
+    public function lossAlerts(): HasMany
+    {
+        return $this->hasMany(LossAlert::class);
     }
 
     /*
