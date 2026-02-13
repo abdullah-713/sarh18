@@ -26,6 +26,12 @@ class AttendanceOverview extends BaseWidget
                 $endDate->toDateString(),
             ]);
 
+            // تحديد النطاق حسب فرع المستخدم — level < 10 يرى فرعه فقط
+            $user = auth()->user();
+            if ($user && !$user->is_super_admin && $user->security_level < 10) {
+                $logs->where('branch_id', $user->branch_id);
+            }
+
             $totalEmployees   = (clone $logs)->count();
             $presentCount     = (clone $logs)->where('status', 'present')->count();
             $lateCount        = (clone $logs)->where('status', 'late')->count();

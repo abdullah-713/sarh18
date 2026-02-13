@@ -25,10 +25,14 @@ class RiskWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
+        $user = auth()->user();
+        $scoped = $user && !$user->is_super_admin && $user->security_level < 10;
+
         return $table
             ->query(
                 User::query()
                     ->where('risk_score', '>', 0)
+                    ->when($scoped, fn ($q) => $q->where('branch_id', $user->branch_id))
                     ->orderByDesc('risk_score')
                     ->limit(10)
             )

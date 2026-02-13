@@ -27,10 +27,14 @@ class AttendanceHeatmapWidget extends Widget
 
     public function mount(): void
     {
-        $this->branches = Branch::where('is_active', true)
-            ->pluck('name_ar', 'id')
-            ->toArray();
+        // تحديد النطاق حسب فرع المستخدم — level < 10 يرى فرعه فقط
+        $user   = auth()->user();
+        $scoped = $user && !$user->is_super_admin && $user->security_level < 10;
 
+        $branchQuery = Branch::where('is_active', true);
+        if ($scoped) $branchQuery->where('id', $user->branch_id);
+
+        $this->branches = $branchQuery->pluck('name_ar', 'id')->toArray();
         $this->selectedBranch = array_key_first($this->branches);
     }
 

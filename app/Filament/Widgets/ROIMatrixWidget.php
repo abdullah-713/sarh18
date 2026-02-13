@@ -24,8 +24,14 @@ class ROIMatrixWidget extends Widget
         try {
             [$startDate, $endDate] = $this->getFilterDates();
 
+            // تحديد النطاق حسب فرع المستخدم — level < 10 يرى فرعه فقط
+            $user     = auth()->user();
+            $branchId = ($user && !$user->is_super_admin && $user->security_level < 10)
+                ? $user->branch_id
+                : null;
+
             $service = app(AnalyticsService::class);
-            $matrixData = $service->calculateROIMatrix($startDate, $endDate);
+            $matrixData = $service->calculateROIMatrix($startDate, $endDate, $branchId);
         } catch (\Throwable $e) {
             $matrixData = [];
         }

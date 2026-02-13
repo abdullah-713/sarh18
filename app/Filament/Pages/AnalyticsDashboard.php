@@ -29,6 +29,11 @@ class AnalyticsDashboard extends Page
         return $user && ($user->is_super_admin || $user->security_level >= 10);
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canAccess();
+    }
+
     public array $clockData = [];
     public array $recentAlerts = [];
     public array $highRiskPatterns = [];

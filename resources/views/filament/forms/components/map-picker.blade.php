@@ -13,6 +13,7 @@
             loaded: false,
             error: false,
             mapReady: false,
+            _pushing: false,
 
             loadLeaflet() {
                 return new Promise((resolve, reject) => {
@@ -45,15 +46,49 @@
                 }, 1000);
             },
 
+            // Push map state → Livewire form fields
+            syncToForm() {
+                this._pushing = true;
+                this.$wire.set('data.latitude', this.lat);
+                this.$wire.set('data.longitude', this.lng);
+                setTimeout(() => { this._pushing = false; }, 600);
+            },
+
+            // Pull Livewire form fields → map state
+            syncFromForm() {
+                if (this._pushing) return;
+                const lat = parseFloat(this.$wire.get('data.latitude'));
+                const lng = parseFloat(this.$wire.get('data.longitude'));
+                const radius = parseInt(this.$wire.get('data.geofence_radius'));
+
+                let changed = false;
+                if (!isNaN(lat) && Math.abs(lat - (this.lat || 0)) > 0.00000005) { this.lat = lat; changed = true; }
+                if (!isNaN(lng) && Math.abs(lng - (this.lng || 0)) > 0.00000005) { this.lng = lng; changed = true; }
+                if (!isNaN(radius) && radius !== this.radius) { this.radius = radius; changed = true; }
+
+                if (changed) this.updateMapView();
+            },
+
+            // Move marker + circle to current lat/lng/radius
+            updateMapView() {
+                if (!this.marker || !this.circle || !this.map) return;
+                if (!this.lat || !this.lng) return;
+                const ll = L.latLng(this.lat, this.lng);
+                this.marker.setLatLng(ll);
+                this.circle.setLatLng(ll);
+                if (this.radius) this.circle.setRadius(parseInt(this.radius));
+                this.map.panTo(ll);
+            },
+
             initMap() {
                 if (this.mapReady) return;
                 const container = this.$refs.map;
                 if (!container || container.offsetHeight < 10) return;
 
                 this.mapReady = true;
-                const dLat = parseFloat(this.lat) || 24.7136;
-                const dLng = parseFloat(this.lng) || 46.6753;
-                const dRadius = parseInt(this.radius) || 100;
+                const dLat = this.lat || 24.7136;
+                const dLng = this.lng || 46.6753;
+                const dRadius = this.radius || 100;
 
                 this.map = L.map(container, {
                     center: [dLat, dLng],
@@ -80,50 +115,42 @@
                     weight: 2,
                 }).addTo(this.map);
 
+                // Marker drag → push to form
                 this.marker.on('dragend', (e) => {
                     const pos = e.target.getLatLng();
                     this.lat = parseFloat(pos.lat.toFixed(7));
                     this.lng = parseFloat(pos.lng.toFixed(7));
                     this.circle.setLatLng(pos);
+                    this.syncToForm();
                 });
 
+                // Map click → push to form
                 this.map.on('click', (e) => {
                     this.lat = parseFloat(e.latlng.lat.toFixed(7));
                     this.lng = parseFloat(e.latlng.lng.toFixed(7));
                     this.marker.setLatLng(e.latlng);
                     this.circle.setLatLng(e.latlng);
+                    this.syncToForm();
                 });
 
+                // Watch local radius → update circle
                 this.$watch('radius', (val) => {
                     if (this.circle && val) this.circle.setRadius(parseInt(val));
-                });
-
-                this.$watch('lat', (val) => {
-                    if (this.marker && val && this.lng) {
-                        const ll = L.latLng(parseFloat(val), parseFloat(this.lng));
-                        this.marker.setLatLng(ll);
-                        this.circle.setLatLng(ll);
-                        this.map.panTo(ll);
-                    }
-                });
-
-                this.$watch('lng', (val) => {
-                    if (this.marker && val && this.lat) {
-                        const ll = L.latLng(parseFloat(this.lat), parseFloat(val));
-                        this.marker.setLatLng(ll);
-                        this.circle.setLatLng(ll);
-                        this.map.panTo(ll);
-                    }
                 });
 
                 this.forceResize();
             },
 
             async init() {
-                // Wire entangle bindings
-                this.lat = this.$wire.entangle('data.latitude');
-                this.lng = this.$wire.entangle('data.longitude');
-                this.radius = this.$wire.entangle('data.geofence_radius');
+                // Read initial values from Livewire form data
+                this.lat = parseFloat(this.$wire.get('data.latitude')) || null;
+                this.lng = parseFloat(this.$wire.get('data.longitude')) || null;
+                this.radius = parseInt(this.$wire.get('data.geofence_radius')) || 100;
+
+                // Listen for text-input changes dispatched from afterStateUpdated
+                this.$wire.on('map-sync-needed', () => {
+                    this.$nextTick(() => this.syncFromForm());
+                });
 
                 try {
                     await this.loadLeaflet();

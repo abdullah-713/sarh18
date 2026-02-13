@@ -36,7 +36,15 @@ class BranchPerformanceHeatmap extends BaseWidget
         $start = $startDate->toDateString();
         $end   = $endDate->toDateString();
 
-        $branches = Branch::active()->get();
+        $branchQuery = Branch::active();
+
+        // تحديد النطاق حسب فرع المستخدم — level < 10 يرى فرعه فقط
+        $user = auth()->user();
+        if ($user && !$user->is_super_admin && $user->security_level < 10) {
+            $branchQuery->where('id', $user->branch_id);
+        }
+
+        $branches = $branchQuery->get();
 
         return $branches->map(function (Branch $branch) use ($start, $end) {
             $logs = AttendanceLog::where('branch_id', $branch->id)
@@ -84,6 +92,10 @@ class BranchPerformanceHeatmap extends BaseWidget
         return $table
             ->query(
                 Branch::query()->active()
+                    ->when(
+                        auth()->user() && !auth()->user()->is_super_admin && auth()->user()->security_level < 10,
+                        fn ($q) => $q->where('id', auth()->user()->branch_id)
+                    )
             )
             ->columns([
                 Tables\Columns\TextColumn::make('name_ar')

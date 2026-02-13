@@ -26,7 +26,13 @@ class EfficiencyScoreCardWidget extends Widget
             [$startDate, $endDate] = $this->getFilterDates();
 
             $service  = app(AnalyticsService::class);
-            $branches = Branch::where('is_active', true)->get();
+
+            // تحديد النطاق حسب فرع المستخدم — level < 10 يرى فرعه فقط
+            $user    = auth()->user();
+            $scoped  = $user && !$user->is_super_admin && $user->security_level < 10;
+            $branchQuery = Branch::where('is_active', true);
+            if ($scoped) $branchQuery->where('id', $user->branch_id);
+            $branches = $branchQuery->get();
             $scores   = [];
 
             foreach ($branches as $branch) {

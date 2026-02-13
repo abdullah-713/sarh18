@@ -224,12 +224,14 @@ class AnalyticsService
     | Quadrant analysis: High ROI / Low ROI × High Discipline / Low Discipline
     */
 
-    public function calculateROIMatrix(?Carbon $startDate = null, ?Carbon $endDate = null): array
+    public function calculateROIMatrix(?Carbon $startDate = null, ?Carbon $endDate = null, ?int $branchId = null): array
     {
         $startDate = $startDate ?? now()->startOfMonth();
         $endDate   = $endDate ?? now();
 
-        $branches = Branch::where('is_active', true)->get();
+        $branchQuery = Branch::where('is_active', true);
+        if ($branchId) $branchQuery->where('id', $branchId);
+        $branches = $branchQuery->get();
         $matrix   = [];
 
         foreach ($branches as $branch) {

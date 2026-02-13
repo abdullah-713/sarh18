@@ -16,6 +16,13 @@ class MessagingChat extends Component
     public function mount(Conversation $conversation): void
     {
         $this->conversation = $conversation;
+
+        // التحقق من أن المستخدم مشارك في المحادثة
+        $isParticipant = $conversation->participants()->where('user_id', Auth::id())->exists();
+        if (! $isParticipant && $conversation->created_by !== Auth::id()) {
+            abort(403, 'غير مصرح لك بالدخول إلى هذه المحادثة.');
+        }
+
         $this->markAsRead();
     }
 

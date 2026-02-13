@@ -30,6 +30,35 @@ class PayrollResource extends Resource
 
     protected static ?int $navigationSort = 15;
 
+    /**
+     * security_level >= 7 أو is_super_admin فقط.
+     */
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user && ($user->is_super_admin || $user->security_level >= 7);
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canAccess();
+    }
+
+    /**
+     * تحديد نطاق البيانات حسب فرع المستخدم — level < 10 يرى فرعه فقط.
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user  = auth()->user();
+
+        if ($user && !$user->is_super_admin && $user->security_level < 10) {
+            $query->whereHas('user', fn (Builder $q) => $q->where('branch_id', $user->branch_id));
+        }
+
+        return $query;
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([

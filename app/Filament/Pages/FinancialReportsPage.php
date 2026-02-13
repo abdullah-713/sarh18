@@ -27,6 +27,20 @@ class FinancialReportsPage extends Page implements HasForms
 
     protected static ?string $slug = 'financial-reports';
 
+    /**
+     * security_level >= 7 أو is_super_admin فقط.
+     */
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user && ($user->is_super_admin || $user->security_level >= 7);
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canAccess();
+    }
+
     // Form state
     public ?string $scope = 'company';
     public ?int $scope_id = null;

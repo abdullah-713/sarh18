@@ -50,6 +50,11 @@ class GeneralSettingsPage extends Page implements HasForms
         return $user && ($user->is_super_admin || $user->security_level >= 10);
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canAccess();
+    }
+
     public function mount(): void
     {
         $settings = Setting::freshInstance();

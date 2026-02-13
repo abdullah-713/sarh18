@@ -34,4 +34,9 @@ class ApiDocsPage extends Page
 
         return $user && ($user->security_level >= 7 || $user->is_super_admin);
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canAccess();
+    }
 }

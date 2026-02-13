@@ -22,7 +22,12 @@ class DailyNewsTicker extends Widget
     public function getBranchHighlights(): array
     {
         $today = now()->toDateString();
-        $branches = Branch::where('is_active', true)->get();
+        $user  = auth()->user();
+        $scoped = $user && !$user->is_super_admin && $user->security_level < 10;
+
+        $branchQuery = Branch::where('is_active', true);
+        if ($scoped) $branchQuery->where('id', $user->branch_id);
+        $branches = $branchQuery->get();
         $highlights = [];
 
         foreach ($branches as $branch) {
@@ -64,10 +69,13 @@ class DailyNewsTicker extends Widget
     {
         $items = [];
         $today = now()->toDateString();
+        $user  = auth()->user();
+        $scoped = $user && !$user->is_super_admin && $user->security_level < 10;
 
         // Today attendance stats
         $todayLates = AttendanceLog::where('attendance_date', $today)
             ->where('delay_minutes', '>', 0)
+            ->when($scoped, fn ($q) => $q->where('branch_id', $user->branch_id))
             ->count();
 
         $todayOnTime = AttendanceLog::where('attendance_date', $today)
@@ -75,6 +83,7 @@ class DailyNewsTicker extends Widget
                 $q->where('delay_minutes', '<=', 0)->orWhereNull('delay_minutes');
             })
             ->whereNotNull('check_in_at')
+            ->when($scoped, fn ($q) => $q->where('branch_id', $user->branch_id))
             ->count();
 
         if ($todayOnTime + $todayLates > 0) {
@@ -86,7 +95,9 @@ class DailyNewsTicker extends Widget
         }
 
         // Total active employees
-        $totalEmployees = User::where('status', 'active')->count();
+        $totalEmployees = User::where('status', 'active')
+            ->when($scoped, fn ($q) => $q->where('branch_id', $user->branch_id))
+            ->count();
         $items[] = [
             'icon'  => "\u{1F465}",
             'text'  => __('competition.ticker_total_employees', ['count' => $totalEmployees]),
@@ -96,6 +107,7 @@ class DailyNewsTicker extends Widget
         // Top scorer
         $topScorer = User::where('status', 'active')
             ->where('total_points', '>', 0)
+            ->when($scoped, fn ($q) => $q->where('branch_id', $user->branch_id))
             ->orderByDesc('total_points')
             ->first();
 

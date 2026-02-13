@@ -104,7 +104,7 @@ class BranchResource extends Resource
                         ->minValue(-90)
                         ->maxValue(90)
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('latitude', $state))
+                        ->afterStateUpdated(fn ($livewire) => $livewire->dispatch('map-sync-needed'))
                         ->hintIcon('heroicon-m-information-circle', tooltip: __('branches.latitude_hint')),
 
                     Forms\Components\TextInput::make('longitude')
@@ -115,7 +115,7 @@ class BranchResource extends Resource
                         ->minValue(-180)
                         ->maxValue(180)
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('longitude', $state))
+                        ->afterStateUpdated(fn ($livewire) => $livewire->dispatch('map-sync-needed'))
                         ->hintIcon('heroicon-m-information-circle', tooltip: __('branches.longitude_hint')),
 
                     Forms\Components\TextInput::make('geofence_radius')
@@ -124,8 +124,10 @@ class BranchResource extends Resource
                         ->numeric()
                         ->default(100)
                         ->minValue(1)
-                        ->maxValue(100000)
+                        ->maxValue(65535)
                         ->suffix(__('branches.meters'))
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(fn ($livewire) => $livewire->dispatch('map-sync-needed'))
                         ->helperText(__('branches.geofence_radius_help'))
                         ->hintIcon('heroicon-m-information-circle', tooltip: __('branches.geofence_radius_hint')),
                 ])->columns(['default' => 1, 'lg' => 2]),

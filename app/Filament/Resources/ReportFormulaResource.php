@@ -50,6 +50,11 @@ class ReportFormulaResource extends Resource
         return $user && ($user->is_super_admin || $user->security_level >= 10);
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canAccess();
+    }
+
     public static function form(Form $form): Form
     {
         $availableVars = FormulaEngineService::getAvailableVariables();

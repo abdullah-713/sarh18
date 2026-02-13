@@ -28,18 +28,26 @@ class RealTimeLossCounter extends BaseWidget
 
             $service = app(FinancialReportingService::class);
 
+            // تحديد النطاق حسب فرع المستخدم — level < 10 يرى فرعه فقط
+            $user     = auth()->user();
+            $scoped   = $user && !$user->is_super_admin && $user->security_level < 10;
+            $branchId = $scoped ? $user->branch_id : null;
+
             // Sum loss across the filtered date range
-            $periodLoss = (float) AttendanceLog::whereBetween('attendance_date', [$startStr, $endStr])
-                ->sum('delay_cost');
+            $periodLossQuery = AttendanceLog::whereBetween('attendance_date', [$startStr, $endStr]);
+            if ($scoped) $periodLossQuery->where('branch_id', $branchId);
+            $periodLoss = (float) $periodLossQuery->sum('delay_cost');
 
             // Comparison: same duration in the previous period
             $days         = $startDate->diffInDays($endDate) + 1;
             $prevEnd      = $startDate->copy()->subDay();
             $prevStart    = $prevEnd->copy()->subDays($days - 1);
-            $previousLoss = (float) AttendanceLog::whereBetween('attendance_date', [
+            $prevLossQuery = AttendanceLog::whereBetween('attendance_date', [
                 $prevStart->toDateString(),
                 $prevEnd->toDateString(),
-            ])->sum('delay_cost');
+            ]);
+            if ($scoped) $prevLossQuery->where('branch_id', $branchId);
+            $previousLoss = (float) $prevLossQuery->sum('delay_cost');
 
             $lossDiff = $periodLoss - $previousLoss;
             $trendDescription = ($lossDiff >= 0 ? '+' : '-')
@@ -48,6 +56,7 @@ class RealTimeLossCounter extends BaseWidget
 
             // Counts for the filtered period
             $logs        = AttendanceLog::whereBetween('attendance_date', [$startStr, $endStr]);
+            if ($scoped) $logs->where('branch_id', $branchId);
             $lateCount   = (clone $logs)->where('status', 'late')->count();
             $absentCount = (clone $logs)->where('status', 'absent')->count();
 
