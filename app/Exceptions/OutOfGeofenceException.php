@@ -21,4 +21,14 @@ class OutOfGeofenceException extends RuntimeException
             ])
         );
     }
+
+    public function getDistance(): float
+    {
+        return $this->distance;
+    }
+
+    public function getAllowedRadius(): float
+    {
+        return $this->allowedRadius;
+    }
 }

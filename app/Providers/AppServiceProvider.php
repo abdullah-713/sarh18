@@ -2,7 +2,16 @@
 
 namespace App\Providers;
 
+use App\Events\BadgeAwarded;
+use App\Events\TrapTriggered;
+use App\Listeners\HandleBadgePoints;
+use App\Listeners\LogTrapInteraction;
+use App\Models\AttendanceLog;
+use App\Models\User;
+use App\Policies\AttendanceLogPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +30,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        /*
+        |----------------------------------------------------------------------
+        | Event → Listener Bindings (v4.0)
+        |----------------------------------------------------------------------
+        */
+        Event::listen(BadgeAwarded::class, HandleBadgePoints::class);
+        Event::listen(TrapTriggered::class, LogTrapInteraction::class);
+
         /*
         |----------------------------------------------------------------------
         | Arabic Numeral Blade Directive: @arNum($value)
@@ -106,5 +123,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('access-stealth-resources', function ($user) {
             return $user->security_level >= 10 || $user->is_super_admin;
         });
+
+        /*
+        |----------------------------------------------------------------------
+        | Register Policies (v4.0-emergency)
+        |----------------------------------------------------------------------
+        */
+        Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(AttendanceLog::class, AttendanceLogPolicy::class);
     }
 }

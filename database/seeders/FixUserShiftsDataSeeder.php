@@ -43,5 +43,38 @@ class FixUserShiftsDataSeeder extends Seeder
             ]);
 
         $this->command->info("✅ user_badges: تم تحديث {$badgesUpdated} سجل بعمود awarded_by.");
+
+        // 3. ملء effective_from من created_at (v4.0)
+        $effectiveUpdated = DB::table('user_shifts')
+            ->whereNull('effective_from')
+            ->update(['effective_from' => DB::raw('created_at')]);
+
+        $this->command->info("✅ user_shifts: تم تحديث {$effectiveUpdated} سجل بعمود effective_from.");
+
+        // 4. تعيين أحدث تعيين كـ is_current لكل موظف (v4.0)
+        $userIds = DB::table('user_shifts')->distinct()->pluck('user_id');
+        $currentUpdated = 0;
+
+        foreach ($userIds as $userId) {
+            // إعادة تعيين الكل كـ false
+            DB::table('user_shifts')
+                ->where('user_id', $userId)
+                ->update(['is_current' => false]);
+
+            // تعيين الأحدث كـ true
+            $latest = DB::table('user_shifts')
+                ->where('user_id', $userId)
+                ->orderBy('effective_from', 'desc')
+                ->first();
+
+            if ($latest) {
+                DB::table('user_shifts')
+                    ->where('id', $latest->id)
+                    ->update(['is_current' => true]);
+                $currentUpdated++;
+            }
+        }
+
+        $this->command->info("✅ user_shifts: تم تعيين is_current لـ {$currentUpdated} موظف.");
     }
 }

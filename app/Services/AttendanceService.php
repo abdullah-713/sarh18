@@ -87,6 +87,9 @@ class AttendanceService
         // 7 — Persist
         $log->save();
 
+        // 8 — Fire event (v4.0)
+        event(new \App\Events\AttendanceRecorded($log));
+
         return $log;
     }
 
@@ -144,6 +147,22 @@ class AttendanceService
         $log->save();
 
         return $log;
+    }
+
+    /**
+     * تسجيل حضور غير متزامن (Queue-based)
+     *
+     * يرسل طلب الحضور للمعالجة في الخلفية ويعيد حالة "جاري المعالجة".
+     * مناسب للأوقات ذات الضغط العالي (بداية الدوام).
+     */
+    public function queueCheckIn(User $user, float $lat, float $lng, ?string $ip, ?string $device): array
+    {
+        \App\Jobs\ProcessAttendanceJob::dispatch($user, $lat, $lng, $ip, $device);
+
+        return [
+            'status'  => 'processing',
+            'message' => __('attendance.check_in_queued', [], 'ar') ?: 'جاري معالجة طلب الحضور',
+        ];
     }
 
     /**

@@ -108,6 +108,9 @@ class UserBadge extends Model
             ]);
         }
 
+        // v4.0: إطلاق حدث منح الشارة
+        event(new \App\Events\BadgeAwarded($userBadge));
+
         return $userBadge;
     }
 }

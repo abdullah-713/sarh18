@@ -93,6 +93,7 @@ Route::get('/whistleblower/track', WhistleblowerTrack::class)->name('whistleblow
 */
 Route::middleware(['auth'])->prefix('attendance')->name('attendance.')->group(function () {
     Route::post('/check-in',  [AttendanceController::class, 'checkIn'])->name('check_in');
+    Route::post('/queue-check-in', [AttendanceController::class, 'queueCheckIn'])->name('queue_check_in');
     Route::post('/check-out', [AttendanceController::class, 'checkOut'])->name('check_out');
     Route::get('/today',      [AttendanceController::class, 'todayStatus'])->name('today');
 });

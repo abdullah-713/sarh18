@@ -293,7 +293,8 @@ class UserResource extends Resource
                         Tables\Columns\TextColumn::make('basic_salary')
                             ->label(__('users.basic_salary'))
                             ->money('SAR')
-                            ->sortable(),
+                            ->sortable()
+                            ->visible(fn (): bool => auth()->user()->security_level >= 6 || auth()->user()->is_super_admin),
 
                         Tables\Columns\TextColumn::make('total_points')
                             ->label(__('users.total_points'))
@@ -315,7 +316,9 @@ class UserResource extends Resource
                                 $state >= 7  => 'warning',
                                 $state >= 4  => 'info',
                                 default      => 'gray',
-                            }),
+                            })
+                            ->visible(fn (): bool => auth()->user()->security_level >= 7),
+
 
                         Tables\Columns\IconColumn::make('status')
                             ->label(__('users.status'))

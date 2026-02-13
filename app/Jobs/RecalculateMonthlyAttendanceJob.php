@@ -51,6 +51,7 @@ class RecalculateMonthlyAttendanceJob implements ShouldQueue
         } elseif ($this->scope === 'user') {
             $query->where('user_id', $this->scopeId);
         }
+        // scope === 'all' → no filter, recalculate everything
 
         $logs = $query->with(['user', 'branch'])->get();
         $updated = 0;
@@ -78,5 +79,18 @@ class RecalculateMonthlyAttendanceJob implements ShouldQueue
         }
 
         Log::info("[RecalculateAttendance] Complete — {$updated} records updated for {$this->scope}:{$this->scopeId}, triggered by user:{$this->triggeredBy}");
+    }
+
+    /**
+     * إنشاء Job لإعادة حساب شهر كامل لجميع الموظفين.
+     * تُستخدم من الجدولة الشهرية الآلية.
+     */
+    public static function forMonth(int $year, int $month): self
+    {
+        return new self(
+            scope: 'all',
+            scopeId: 0,
+            triggeredBy: 0,
+        );
     }
 }

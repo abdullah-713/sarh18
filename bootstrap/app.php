@@ -22,5 +22,61 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\SetPermissionsPolicy::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // تسجيل الأخطاء في audit_logs (الإنتاج فقط)
+        $exceptions->reportable(function (\Throwable $e) {
+            if (! app()->environment('local')) {
+                try {
+                    \App\Models\AuditLog::record(
+                        'system.error',
+                        null,
+                        null,
+                        [
+                            'message' => $e->getMessage(),
+                            'file'    => $e->getFile(),
+                            'line'    => $e->getLine(),
+                        ],
+                        'خطأ في النظام'
+                    );
+                } catch (\Exception $logError) {
+                    // نتجاهل أخطاء التسجيل لتجنب الدورات اللانهائية
+                }
+            }
+        });
+
+        // معالجة موحدة للأخطاء في JSON responses
+        $exceptions->renderable(function (\Throwable $e, $request) {
+            if (! $request->expectsJson()) {
+                return null;
+            }
+
+            // BusinessException → رسالة واضحة للمستخدم
+            if ($e instanceof \App\Exceptions\BusinessException) {
+                return response()->json([
+                    'message' => $e->getUserMessage(),
+                ], $e->getHttpCode());
+            }
+
+            // Model Not Found → 404
+            if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+                return response()->json([
+                    'message' => 'المورد المطلوب غير موجود',
+                ], 404);
+            }
+
+            // Division by Zero → 422
+            if ($e instanceof \DivisionByZeroError) {
+                return response()->json([
+                    'message' => 'خطأ في الحسابات المالية. الرجاء التواصل مع الدعم الفني',
+                ], 422);
+            }
+
+            // في الإنتاج: نخفي تفاصيل الأخطاء الفنية
+            if (! app()->environment('local')) {
+                return response()->json([
+                    'message' => 'حدث خطأ داخلي في الخادم',
+                ], 500);
+            }
+
+            return null;
+        });
     })->create();
