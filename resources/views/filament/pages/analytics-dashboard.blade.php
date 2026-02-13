@@ -28,7 +28,7 @@
                     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-red-50 dark:bg-red-900/20">
                         <div class="flex items-center gap-3">
                             <x-heroicon-o-bell-alert class="w-5 h-5 text-red-600" />
-                            <h3 class="text-base font-bold text-red-800 dark:text-red-200">تنبيهات الخسائر</h3>
+                            <h3 class="text-base font-bold text-red-800 dark:text-red-200">{{ __('analytics.loss_alerts') }}</h3>
                             <span class="mr-auto bg-red-100 text-red-700 text-xs font-bold px-2 py-0.5 rounded-full">
                                 {{ count($recentAlerts) }}
                             </span>
@@ -39,7 +39,7 @@
                             @php
                                 $sevColors = ['critical' => 'red', 'high' => 'amber', 'medium' => 'sky', 'low' => 'gray'];
                                 $sevColor = $sevColors[$alert['severity']] ?? 'gray';
-                                $sevLabels = ['critical' => 'حرج', 'high' => 'عالي', 'medium' => 'متوسط', 'low' => 'منخفض'];
+                                $sevLabels = ['critical' => __('analytics.severity_critical'), 'high' => __('analytics.severity_high'), 'medium' => __('analytics.severity_medium'), 'low' => __('analytics.severity_low')];
                             @endphp
                             <div class="px-4 py-3 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-800">
                                 <span class="mt-1 inline-block w-2 h-2 rounded-full bg-{{ $sevColor }}-500 flex-shrink-0"></span>
@@ -55,12 +55,12 @@
                                 </div>
                                 <button wire:click="acknowledgeAlert({{ $alert['id'] }})"
                                         class="text-xs text-primary-600 hover:text-primary-800 font-medium flex-shrink-0">
-                                    اطّلعت
+                                        {{ __('analytics.acknowledged_label') }}
                                 </button>
                             </div>
                         @empty
                             <div class="px-4 py-8 text-center text-gray-400 text-sm">
-                                لا توجد تنبيهات جديدة ✅
+                                {{ __('analytics.no_new_alerts') }}
                             </div>
                         @endforelse
                     </div>
@@ -73,7 +73,7 @@
                     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-amber-50 dark:bg-amber-900/20">
                         <div class="flex items-center gap-3">
                             <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-amber-600" />
-                            <h3 class="text-base font-bold text-amber-800 dark:text-amber-200">أنماط عالية المخاطر</h3>
+                            <h3 class="text-base font-bold text-amber-800 dark:text-amber-200">{{ __('analytics.high_risk_patterns_title') }}</h3>
                             <span class="mr-auto bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full">
                                 {{ count($highRiskPatterns) }}
                             </span>
@@ -85,10 +85,10 @@
                                 $riskColors = ['critical' => 'red', 'high' => 'amber', 'medium' => 'sky', 'low' => 'emerald'];
                                 $riskColor = $riskColors[$pattern['risk_level']] ?? 'gray';
                                 $patternLabels = [
-                                    'frequent_late' => 'تأخير متكرر',
-                                    'pre_holiday_absence' => 'غياب ما قبل الإجازة',
-                                    'monthly_cycle' => 'نمط شهري',
-                                    'burnout_risk' => 'خطر إرهاق',
+                                    'frequent_late' => __('analytics.pattern_frequent_late'),
+                                    'pre_holiday_absence' => __('analytics.pattern_pre_holiday_absence'),
+                                    'monthly_cycle' => __('analytics.pattern_monthly_cycle'),
+                                    'burnout_risk' => __('analytics.pattern_burnout_risk'),
                                 ];
                             @endphp
                             <div class="px-4 py-3 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-800">
@@ -106,17 +106,17 @@
                                     <div class="flex items-center gap-3 mt-1">
                                         <span class="text-xs text-gray-400">{{ $pattern['branch']['name_ar'] ?? '' }}</span>
                                         <span class="text-xs text-red-600 font-medium tabular-nums">
-                                            خسارة: {{ number_format($pattern['financial_impact'], 0) }} ر.س
+                                            {{ __('analytics.loss_label') }}: {{ number_format($pattern['financial_impact'], 0) }} {{ __('command.sar') }}
                                         </span>
                                         <span class="text-xs text-gray-400 tabular-nums">
-                                            احتمال: {{ $pattern['frequency_score'] }}%
+                                            {{ __('analytics.probability_label') }}: {{ $pattern['frequency_score'] }}%
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         @empty
                             <div class="px-4 py-8 text-center text-gray-400 text-sm">
-                                لا توجد أنماط عالية المخاطر ✅
+                                {{ __('analytics.no_high_risk') }}
                             </div>
                         @endforelse
                     </div>

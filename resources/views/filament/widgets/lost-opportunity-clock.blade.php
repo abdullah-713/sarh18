@@ -16,15 +16,15 @@
                         <x-heroicon-o-clock class="w-6 h-6 text-white" />
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-white">ساعة الفرص الضائعة</h3>
-                        <p class="text-sm text-white/70">الخسائر التراكمية اليوم — تحديث مباشر</p>
+                        <h3 class="text-lg font-bold text-white">{{ __('analytics.lost_opportunity_clock') }}</h3>
+                        <p class="text-sm text-white/70">{{ __('analytics.cumulative_losses_today') }}</p>
                     </div>
                 </div>
                 <div class="text-left">
                     <div class="text-3xl font-black text-white tabular-nums">
                         {{ number_format($totalLoss, 2) }}
                     </div>
-                    <div class="text-xs text-white/70">ريال سعودي</div>
+                    <div class="text-xs text-white/70">{{ __('analytics.sar_currency') }}</div>
                 </div>
             </div>
         </div>
@@ -33,22 +33,22 @@
         <div class="grid grid-cols-3 gap-px bg-gray-200 dark:bg-gray-700">
             <div class="bg-white dark:bg-gray-900 p-4 text-center">
                 <div class="text-2xl font-bold text-red-600 tabular-nums">{{ number_format($totalLoss, 0) }}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">إجمالي الخسائر (ر.س)</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ __('analytics.total_losses_sar') }}</div>
             </div>
             <div class="bg-white dark:bg-gray-900 p-4 text-center">
                 <div class="text-2xl font-bold text-amber-600 tabular-nums">{{ number_format($totalDelay) }}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">دقائق التأخير</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ __('analytics.delay_minutes_label') }}</div>
             </div>
             <div class="bg-white dark:bg-gray-900 p-4 text-center">
                 <div class="text-2xl font-bold text-gray-700 dark:text-gray-300 tabular-nums">{{ $totalAbsent }}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">غائبون اليوم</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ __('analytics.absent_today') }}</div>
             </div>
         </div>
 
         {{-- Branch Breakdown --}}
         @if(count($branches) > 0)
             <div class="p-4">
-                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">أعلى الفروع خسارة</h4>
+                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ __('analytics.top_losing_branches') }}</h4>
                 <div class="space-y-2">
                     @foreach($branches as $i => $branch)
                         @php
@@ -60,7 +60,7 @@
                             <div class="flex-1">
                                 <div class="flex justify-between text-xs mb-1">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">{{ $branch['name'] }}</span>
-                                    <span class="text-red-600 font-bold tabular-nums">{{ number_format($branch['loss'], 0) }} ر.س</span>
+                                    <span class="text-red-600 font-bold tabular-nums">{{ number_format($branch['loss'], 0) }} {{ __('command.sar') }}</span>
                                 </div>
                                 <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                                     <div class="bg-gradient-to-l from-red-500 to-red-600 h-2 rounded-full transition-all duration-500"
@@ -75,7 +75,7 @@
 
         {{-- Timestamp --}}
         <div class="px-4 py-2 bg-gray-50 dark:bg-gray-800 text-center">
-            <span class="text-xs text-gray-400">آخر تحديث: {{ $d['timestamp'] ?? now()->toDateTimeString() }}</span>
+            <span class="text-xs text-gray-400">{{ __('analytics.last_update') }}: {{ $d['timestamp'] ?? now()->toDateTimeString() }}</span>
         </div>
     </div>
 </div>

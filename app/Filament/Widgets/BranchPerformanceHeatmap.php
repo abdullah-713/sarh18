@@ -31,9 +31,10 @@ class BranchPerformanceHeatmap extends BaseWidget
                 \App\Models\Branch::query()->active()
             )
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('name_ar')
                     ->label(__('command.branch_name'))
-                    ->searchable(['name_ar', 'name_en']),
+                    ->searchable(),
+
 
                 Tables\Columns\TextColumn::make('total_employees')
                     ->label(__('command.total_employees'))

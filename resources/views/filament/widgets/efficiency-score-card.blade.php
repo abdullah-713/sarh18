@@ -8,8 +8,8 @@
                     <x-heroicon-o-chart-bar class="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">بطاقة أداء الكفاءة</h3>
-                    <p class="text-sm text-gray-500">مقارنة أداء الفروع — {{ now()->translatedFormat('F Y') }}</p>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('analytics.efficiency_score_card') }}</h3>
+                    <p class="text-sm text-gray-500">{{ __('analytics.branch_comparison') }} — {{ now()->translatedFormat('F Y') }}</p>
                 </div>
             </div>
         </div>
@@ -19,11 +19,11 @@
                 <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
                         <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">#</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">الفرع</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">الكفاءة</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">VPM</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">فجوة الإنتاجية</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">الحالة</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">{{ __('analytics.branch_label') }}</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">{{ __('analytics.efficiency_label') }}</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">{{ __('analytics.vpm_label') }}</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">{{ __('analytics.productivity_gap_label') }}</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">{{ __('analytics.status_label') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -37,10 +37,10 @@
                                 default => 'red',
                             };
                             $statusLabel = match(true) {
-                                $eff >= 85 => 'ممتاز',
-                                $eff >= 70 => 'جيد',
-                                $eff >= 50 => 'مقبول',
-                                default => 'حرج',
+                                $eff >= 85 => __('analytics.grade_excellent'),
+                                $eff >= 70 => __('analytics.grade_good'),
+                                $eff >= 50 => __('analytics.grade_acceptable'),
+                                default => __('analytics.grade_critical'),
                             };
                         @endphp
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
@@ -86,7 +86,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-4 py-8 text-center text-gray-400">
-                                لا توجد بيانات متاحة
+                                {{ __('analytics.no_data_available') }}
                             </td>
                         </tr>
                     @endforelse

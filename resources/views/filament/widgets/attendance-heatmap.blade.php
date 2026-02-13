@@ -3,7 +3,7 @@
         $hourly = $heatmap['hourly_distribution'] ?? [];
         $daily  = $heatmap['daily_distribution'] ?? [];
         $maxHourly = max(1, max($hourly ?: [1]));
-        $dayNames = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        $dayNames = [__('analytics.day_sun'), __('analytics.day_mon'), __('analytics.day_tue'), __('analytics.day_wed'), __('analytics.day_thu'), __('analytics.day_fri'), __('analytics.day_sat')];
     @endphp
 
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -14,8 +14,8 @@
                         <x-heroicon-o-map class="w-5 h-5 text-sky-600" />
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">خريطة الحضور الحرارية</h3>
-                        <p class="text-sm text-gray-500">آخر 30 يوم</p>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('analytics.attendance_heatmap') }}</h3>
+                        <p class="text-sm text-gray-500">{{ __('analytics.last_30_days') }}</p>
                     </div>
                 </div>
                 <select wire:model.live="selectedBranch"
@@ -30,7 +30,7 @@
         <div class="p-6 space-y-6">
             {{-- Hourly Distribution --}}
             <div>
-                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">توزيع الحضور بالساعة</h4>
+                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ __('analytics.hourly_distribution') }}</h4>
                 <div class="flex items-end gap-1 h-32">
                     @foreach($hourly as $hour => $count)
                         @php
@@ -41,7 +41,7 @@
                         <div class="flex flex-col items-center flex-1">
                             <div class="{{ $color }} rounded-t w-full transition-all duration-300"
                                  style="height: {{ max($height, 2) }}%"
-                                 title="{{ $hour }}:00 — {{ $count }} تسجيل حضور"></div>
+                                 title="{{ $hour }}:00 — {{ $count }} {{ __('analytics.checkin_count') }}"></div>
                             <span class="text-[9px] text-gray-400 mt-1">{{ $hour }}</span>
                         </div>
                     @endforeach
@@ -50,7 +50,7 @@
 
             {{-- Daily Distribution --}}
             <div>
-                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">توزيع الحضور حسب اليوم</h4>
+                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ __('analytics.daily_distribution') }}</h4>
                 <div class="space-y-2">
                     @foreach($daily as $dow => $counts)
                         @php
@@ -75,11 +75,11 @@
                 <div class="flex items-center gap-4 mt-3 justify-center">
                     <div class="flex items-center gap-1.5">
                         <div class="w-3 h-3 rounded bg-emerald-400"></div>
-                        <span class="text-xs text-gray-500">حضور منتظم</span>
+                        <span class="text-xs text-gray-500">{{ __('analytics.regular_attendance') }}</span>
                     </div>
                     <div class="flex items-center gap-1.5">
                         <div class="w-3 h-3 rounded bg-amber-400"></div>
-                        <span class="text-xs text-gray-500">حضور متأخر</span>
+                        <span class="text-xs text-gray-500">{{ __('analytics.late_attendance') }}</span>
                     </div>
                 </div>
             </div>

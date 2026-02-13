@@ -54,7 +54,7 @@ class BranchProgressWidget extends Component
             return;
         }
 
-        $this->branchName = $branch->name;
+        $this->branchName = $branch->name_ar;
         $this->branchEmployees = $branch->users_count;
 
         $now = now();

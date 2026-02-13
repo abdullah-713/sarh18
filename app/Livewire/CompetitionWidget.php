@@ -68,7 +68,7 @@ class CompetitionWidget extends Component
 
                 return [
                     'id'                => $branch->id,
-                    'name'              => $branch->name,
+                    'name'              => $branch->name_ar,
                     'code'              => $branch->code,
                     'employees'         => $branch->users_count,
                     'late_checkins'     => $lateLogs,
