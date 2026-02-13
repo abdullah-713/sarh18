@@ -142,6 +142,57 @@ class GeneralSettingsPage extends Page implements HasForms
                             ->label('لون الخلفية')
                             ->hintIcon('heroicon-m-information-circle', tooltip: __('install.pwa_background_color_hint')),
                     ])->columns(['default' => 1, 'lg' => 2]),
+
+                // ── Business Logic Definitions ────────────────────
+                Forms\Components\Section::make(__('install.logic_section'))
+                    ->description(__('install.logic_section_desc'))
+                    ->icon('heroicon-o-calculator')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\TextInput::make('logic_settings.loss_multiplier')
+                            ->label(__('install.loss_multiplier'))
+                            ->numeric()
+                            ->default(2.0)
+                            ->step(0.1)
+                            ->minValue(1.0)
+                            ->maxValue(5.0)
+                            ->required()
+                            ->hintIcon('heroicon-m-information-circle', tooltip: __('install.loss_multiplier_hint'))
+                            ->helperText(__('install.loss_multiplier_helper')),
+
+                        Forms\Components\TextInput::make('logic_settings.default_geofence_radius')
+                            ->label(__('install.default_geofence_radius'))
+                            ->numeric()
+                            ->default(100)
+                            ->minValue(10)
+                            ->maxValue(10000)
+                            ->suffix(__('branches.meters'))
+                            ->required()
+                            ->hintIcon('heroicon-m-information-circle', tooltip: __('install.default_geofence_radius_hint'))
+                            ->helperText(__('install.default_geofence_radius_helper')),
+
+                        Forms\Components\TextInput::make('logic_settings.default_grace_period')
+                            ->label(__('install.default_grace_period'))
+                            ->numeric()
+                            ->default(10)
+                            ->minValue(0)
+                            ->maxValue(60)
+                            ->suffix(__('branches.minutes'))
+                            ->required()
+                            ->hintIcon('heroicon-m-information-circle', tooltip: __('install.default_grace_period_hint'))
+                            ->helperText(__('install.default_grace_period_helper')),
+
+                        Forms\Components\TextInput::make('logic_settings.overtime_multiplier')
+                            ->label(__('install.overtime_multiplier'))
+                            ->numeric()
+                            ->default(1.5)
+                            ->step(0.1)
+                            ->minValue(1.0)
+                            ->maxValue(3.0)
+                            ->required()
+                            ->hintIcon('heroicon-m-information-circle', tooltip: __('install.overtime_multiplier_hint'))
+                            ->helperText(__('install.overtime_multiplier_helper')),
+                    ])->columns(['default' => 1, 'lg' => 2]),
             ])
             ->statePath('data');
     }

@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $pwa_short_name
  * @property string $pwa_theme_color
  * @property string $pwa_background_color
+ * @property array  $logic_settings
  */
 class Setting extends Model
 {
@@ -38,7 +39,34 @@ class Setting extends Model
         'pwa_short_name',
         'pwa_theme_color',
         'pwa_background_color',
+        'logic_settings',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'logic_settings' => 'array',
+        ];
+    }
+
+    /**
+     * Default logic settings values.
+     */
+    public const DEFAULT_LOGIC_SETTINGS = [
+        'loss_multiplier'          => 2.0,
+        'default_geofence_radius'  => 100,
+        'default_grace_period'     => 10,
+        'overtime_multiplier'      => 1.5,
+    ];
+
+    /**
+     * Get a specific logic setting with fallback to default.
+     */
+    public function getLogicSetting(string $key, mixed $default = null): mixed
+    {
+        $settings = $this->logic_settings ?? [];
+        return $settings[$key] ?? self::DEFAULT_LOGIC_SETTINGS[$key] ?? $default;
+    }
 
     /**
      * Get the singleton settings instance (cached for 1 hour).
@@ -54,6 +82,7 @@ class Setting extends Model
                 'pwa_short_name'       => 'صرح',
                 'pwa_theme_color'      => '#FF8C00',
                 'pwa_background_color' => '#ffffff',
+                'logic_settings'       => self::DEFAULT_LOGIC_SETTINGS,
             ]);
         });
     }
@@ -71,6 +100,7 @@ class Setting extends Model
             'pwa_short_name'       => 'صرح',
             'pwa_theme_color'      => '#FF8C00',
             'pwa_background_color' => '#ffffff',
+            'logic_settings'       => self::DEFAULT_LOGIC_SETTINGS,
         ]);
     }
 
