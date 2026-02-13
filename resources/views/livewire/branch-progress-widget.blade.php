@@ -1,87 +1,81 @@
-<div class="card">
-    <div class="card-header flex items-center gap-2">
-        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-        </svg>
-        {{ __('pwa.branch_progress_title') }}
+{{-- SARH v2.0 — Branch Progress Hero Card --}}
+<div class="overflow-hidden rounded-2xl shadow-lg" style="border: 1px solid rgba(255, 140, 0, 0.15);">
+    {{-- Gradient Hero --}}
+    <div class="relative overflow-hidden px-6 py-6" style="background: linear-gradient(135deg, #FF8C00, #fb923c, #f59e0b);">
+        {{-- Decorative --}}
+        <div class="absolute top-0 right-0 w-40 h-40 rounded-full" style="background: rgba(255,255,255,0.1); transform: translate(30%, -30%);"></div>
+        <div class="absolute bottom-0 left-0 w-28 h-28 rounded-full" style="background: rgba(255,255,255,0.07); transform: translate(-20%, 20%);"></div>
+
+        @if($branchName)
+        <div class="relative z-10">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium" style="color: rgba(255,255,255,0.85);">
+                        📊 إحصائيات الأسبوع · {{ $periodLabel }}
+                    </p>
+                    <h2 class="text-2xl font-bold text-white mt-1">{{ $branchName }}</h2>
+                    <p class="text-sm mt-1" style="color: rgba(255,255,255,0.75);">{{ $branchEmployees }} {{ __('competition.employees') }}</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl drop-shadow-lg">
+                        @switch($currentLevel)
+                            @case('legendary') 👑 @break
+                            @case('diamond')   💎 @break
+                            @case('gold')      🥇 @break
+                            @case('silver')    🥈 @break
+                            @case('bronze')    🥉 @break
+                            @default           🏁
+                        @endswitch
+                    </div>
+                    <div class="text-sm font-bold text-white mt-1">{{ __('competition.level_' . $currentLevel) }}</div>
+                </div>
+            </div>
+
+            {{-- Score & Progress --}}
+            <div class="mt-5">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-white font-bold text-lg">{{ number_format($currentScore) }} نقطة</span>
+                    @if($nextLevel)
+                        <span class="text-sm" style="color: rgba(255,255,255,0.75);">{{ __('competition.level_' . $nextLevel) }} — {{ number_format($nextLevelThreshold) }}</span>
+                    @else
+                        <span class="text-white font-bold text-sm">🏆 {{ __('pwa.max_level') }}</span>
+                    @endif
+                </div>
+                <div class="h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.2);">
+                    <div class="h-full rounded-full transition-all duration-1000 ease-out" style="width: {{ $progressPercent }}%; background: white;"></div>
+                </div>
+            </div>
+        </div>
+        @else
+        <div class="relative z-10 text-center py-4">
+            <p class="text-sm" style="color: rgba(255,255,255,0.8);">{{ __('pwa.no_branch_assigned') }}</p>
+        </div>
+        @endif
     </div>
 
+    {{-- Stats Grid --}}
     @if($branchName)
-        {{-- Branch Identity --}}
-        <div class="flex items-center justify-between mb-3">
-            <div>
-                <h3 class="font-semibold text-gray-800">{{ $branchName }}</h3>
-                <p class="text-xs text-gray-500">{{ $branchEmployees }} {{ __('competition.employees') }}</p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-white dark:bg-gray-900">
+        <div class="text-center p-3 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-emerald-950/30 dark:to-green-950/30 border border-green-200 dark:border-emerald-800/30 animate-scaleIn" style="animation-delay: 0.15s">
+            <div class="text-2xl font-bold {{ $attendanceRate >= 90 ? 'text-emerald-600' : ($attendanceRate >= 70 ? 'text-amber-500' : 'text-red-500') }}">
+                {{ $attendanceRate }}%
             </div>
-            <div class="text-center">
-                <span class="text-lg">
-                    @switch($currentLevel)
-                        @case('legendary') 👑 @break
-                        @case('diamond')   💎 @break
-                        @case('gold')      🥇 @break
-                        @case('silver')    🥈 @break
-                        @case('bronze')    🥉 @break
-                        @default           🏁
-                    @endswitch
-                </span>
-                <div class="text-xs font-medium {{ match($currentLevel) {
-                    'legendary' => 'text-purple-600',
-                    'diamond'   => 'text-cyan-600',
-                    'gold'      => 'text-yellow-600',
-                    'silver'    => 'text-gray-500',
-                    'bronze'    => 'text-orange-600',
-                    default     => 'text-gray-400',
-                } }}">{{ __('competition.level_' . $currentLevel) }}</div>
-            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">{{ __('pwa.branch_attendance_rate') }}</div>
         </div>
-
-        {{-- Stats Grid --}}
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="stat-card">
-                <div class="stat-value {{ $attendanceRate >= 90 ? 'text-emerald-600' : ($attendanceRate >= 70 ? 'text-amber-500' : 'text-red-600') }}">
-                    {{ $attendanceRate }}%
-                </div>
-                <div class="stat-label">{{ __('pwa.branch_attendance_rate') }}</div>
+        <div class="text-center p-3 rounded-xl bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30 border border-red-200 dark:border-red-800/30 animate-scaleIn" style="animation-delay: 0.2s">
+            <div class="text-2xl font-bold {{ $branchDelayCost > 0 ? 'text-red-500' : 'text-emerald-600' }}">
+                {{ number_format($branchDelayCost, 0) }}
             </div>
-            <div class="stat-card">
-                <div class="stat-value {{ $branchDelayCost > 0 ? 'text-red-600' : 'text-emerald-600' }}">
-                    {{ number_format($branchDelayCost, 0) }}
-                </div>
-                <div class="stat-label">{{ __('competition.financial_loss') }} ({{ __('competition.sar') }})</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value text-emerald-600">{{ $perfectEmployees }}</div>
-                <div class="stat-label">{{ __('competition.perfect_employees') }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value text-red-500">{{ $lateCount }}</div>
-                <div class="stat-label">{{ __('competition.late_checkins') }}</div>
-            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">{{ __('competition.financial_loss') }}</div>
         </div>
-
-        {{-- Level Progress Bar --}}
-        <div>
-            <div class="flex justify-between text-xs text-gray-500 mb-1">
-                <span>{{ __('competition.level_' . $currentLevel) }} ({{ number_format($currentScore) }})</span>
-                @if($nextLevel)
-                    <span>{{ __('competition.level_' . $nextLevel) }} ({{ number_format($nextLevelThreshold) }})</span>
-                @else
-                    <span>{{ __('pwa.max_level') }} ✓</span>
-                @endif
-            </div>
-            <div class="w-full bg-gray-100 rounded-full h-3">
-                <div class="h-3 rounded-full transition-all duration-700 {{ match($currentLevel) {
-                    'legendary' => 'bg-gradient-to-r from-purple-500 to-purple-600',
-                    'diamond'   => 'bg-gradient-to-r from-cyan-400 to-cyan-600',
-                    'gold'      => 'bg-gradient-to-r from-yellow-400 to-yellow-600',
-                    'silver'    => 'bg-gradient-to-r from-gray-300 to-gray-500',
-                    'bronze'    => 'bg-gradient-to-r from-orange-400 to-orange-600',
-                    default     => 'bg-gradient-to-r from-gray-300 to-gray-400',
-                } }}"
-                     style="width: {{ $progressPercent }}%"></div>
-            </div>
+        <div class="text-center p-3 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800/30 animate-scaleIn" style="animation-delay: 0.25s">
+            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $perfectEmployees }}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">{{ __('competition.perfect_employees') }}</div>
         </div>
-    @else
-        <p class="text-sm text-gray-400 text-center py-4">{{ __('pwa.no_branch_assigned') }}</p>
+        <div class="text-center p-3 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border border-amber-200 dark:border-amber-800/30 animate-scaleIn" style="animation-delay: 0.3s">
+            <div class="text-2xl font-bold text-amber-500">{{ $lateCount }}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">{{ __('competition.late_checkins') }}</div>
+        </div>
+    </div>
     @endif
 </div>

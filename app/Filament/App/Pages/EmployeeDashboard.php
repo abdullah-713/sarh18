@@ -21,6 +21,8 @@ class EmployeeDashboard extends BaseDashboard
 
     protected static string $routePath = '/';
 
+    protected static string $view = 'filament.app.pages.employee-dashboard';
+
     public function getHeading(): string
     {
         /** @var \App\Models\User $user */
@@ -45,8 +47,6 @@ class EmployeeDashboard extends BaseDashboard
 
     public function getWidgets(): array
     {
-        return [
-            \App\Filament\App\Widgets\EmployeeWelcomeWidget::class,
-        ];
+        return [];
     }
 }

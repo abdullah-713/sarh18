@@ -9,6 +9,30 @@
 
 @config '../../../../tailwind.config.js';
 
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
 /* ===== GLOBAL TYPOGRAPHY ===== */
 * {
     font-family: 'Cairo', 'Tajawal', sans-serif !important;
@@ -132,6 +156,7 @@
 .fi-btn-color-primary:hover {
     background-color: #ea580c !important;
     color: white !important;
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3) !important;
 }
 
 /* Danger button */
@@ -184,8 +209,8 @@
 
 .fi-wi-stats-overview-stat:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 140, 0, 0.12);
-    border-color: rgba(255, 140, 0, 0.3) !important;
+    box-shadow: 0 8px 30px rgba(255, 140, 0, 0.08);
+    border-color: #fed7aa !important;
 }
 
 .dark .fi-wi-stats-overview-stat {
@@ -208,7 +233,7 @@
 }
 
 .fi-ta-row:hover {
-    background-color: rgba(255, 140, 0, 0.04) !important;
+    background-color: #fffbf5 !important;
 }
 
 .dark .fi-ta-row:hover {
@@ -255,13 +280,13 @@
 }
 
 .fi-section-header {
-    background: linear-gradient(135deg, #fafafa, #f5f5f5) !important;
-    border-bottom: 1px solid #f0f0f0 !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #f5f5f5 !important;
 }
 
 .dark .fi-section-header {
-    background: linear-gradient(135deg, #1a1a1a, #262626) !important;
-    border-bottom-color: #333 !important;
+    background: #1a1a1a !important;
+    border-bottom-color: #262626 !important;
 }
 
 /* ===== LOGIN PAGE ===== */
@@ -275,10 +300,11 @@
 }
 
 .fi-simple-page {
-    background: rgba(255, 255, 255, 0.95) !important;
+    background: rgba(255, 255, 255, 0.97) !important;
     border-radius: 1.5rem !important;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    animation: scaleIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
 .dark .fi-simple-page {
@@ -297,11 +323,13 @@
 .fi-no-notification {
     border-radius: 1rem !important;
     border-right: 4px solid #FF8C00 !important;
+    animation: slideDown 0.3s ease-out both;
 }
 
 /* ===== MODAL ===== */
 .fi-modal-window {
-    border-radius: 1.25rem !important;
+    border-radius: 1.5rem !important;
+    animation: scaleIn 0.25s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
 /* ===== TABS ===== */
@@ -376,16 +404,18 @@
 
 /* ===== TRANSITIONS ===== */
 .fi-page {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeInUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* ===== DROPDOWN ===== */
+.fi-dropdown-panel {
+    border-radius: 1rem !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid #f5f5f5 !important;
+    animation: slideDown 0.2s ease-out both;
+}
+
+.dark .fi-dropdown-panel {
+    border-color: #333 !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
 }

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\AttendanceLog;
 use App\Models\Branch;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -22,6 +23,7 @@ class BranchProgressWidget extends Component
     public int $currentScore = 0;
     public int $nextLevelThreshold = 0;
     public float $progressPercent = 0;
+    public string $periodLabel = '';
 
     private array $levelThresholds = [
         'starter'   => 0,
@@ -56,10 +58,12 @@ class BranchProgressWidget extends Component
         $this->branchEmployees = $branch->users_count;
 
         $now = now();
+        $weekStart = $now->copy()->startOfWeek(Carbon::SUNDAY);
+        $weekEnd = $now->copy()->endOfWeek(Carbon::SATURDAY);
+        $this->periodLabel = $weekStart->translatedFormat('d M') . ' – ' . $weekEnd->translatedFormat('d M');
 
         $logs = AttendanceLog::where('branch_id', $branch->id)
-            ->whereMonth('attendance_date', $now->month)
-            ->whereYear('attendance_date', $now->year)
+            ->whereBetween('attendance_date', [$weekStart, $weekEnd])
             ->get();
 
         $totalLogs = $logs->count();
@@ -73,8 +77,7 @@ class BranchProgressWidget extends Component
 
         // Perfect employees
         $employeesWithIssues = AttendanceLog::where('branch_id', $branch->id)
-            ->whereMonth('attendance_date', $now->month)
-            ->whereYear('attendance_date', $now->year)
+            ->whereBetween('attendance_date', [$weekStart, $weekEnd])
             ->whereIn('status', ['late', 'absent'])
             ->distinct('user_id')
             ->count('user_id');
