@@ -119,6 +119,10 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
                 fn () => view('filament.components.pwa-install-button'),
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => view('filament.components.copyright-easter-egg'),
             );
     }
 }
