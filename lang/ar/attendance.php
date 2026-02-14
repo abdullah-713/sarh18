@@ -44,7 +44,7 @@ return [
     'today_absent' => 'الغائبون',
     'today_delay_losses' => 'خسائر التأخير',
     'today_overtime_value' => 'قيمة العمل الإضافي',
-    'out_of_total' => 'من أصل :total موظف',
+    'out_of_total' => 'من أصل :total حالة',
     'late_warning' => 'يوجد تأخير!',
     'no_late' => 'لا يوجد تأخير ✓',
     'financial_impact_today' => 'الأثر المالي لليوم',

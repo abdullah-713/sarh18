@@ -12,7 +12,7 @@ return [
     'loss_trend' => 'اتجاه الخسارة',
     'vs_yesterday' => 'مقارنة بالأمس',
     'sar' => 'ر.س',
-    'employees' => 'موظف',
+    'employees' => 'حالة',
     'branch_heatmap_title' => 'خريطة أداء الفروع',
     'branch_name' => 'الفرع',
     'total_employees' => 'عدد الموظفين',
