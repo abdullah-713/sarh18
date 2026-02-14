@@ -112,10 +112,14 @@ class ProjectDataSeeder extends Seeder
 
         $branchModels = [];
         foreach ($branches as $branchData) {
-            $branchModels[$branchData['code']] = Branch::updateOrCreate(
-                ['code' => $branchData['code']],
-                $branchData
-            );
+            $branch = Branch::withTrashed()->where('code', $branchData['code'])->first();
+            if ($branch) {
+                $branch->restore();
+                $branch->update($branchData);
+            } else {
+                $branch = Branch::create($branchData);
+            }
+            $branchModels[$branchData['code']] = $branch;
         }
 
         /*
