@@ -139,12 +139,18 @@ class GeneralSettingsPage extends Page implements HasForms
                             ->maxLength(20)
                             ->hintIcon('heroicon-m-information-circle', tooltip: __('install.pwa_short_name_hint')),
 
-                        Forms\Components\ColorPicker::make('pwa_theme_color')
+                        Forms\Components\TextInput::make('pwa_theme_color')
                             ->label('لون الثيم')
+                            ->placeholder('#FF8C00')
+                            ->maxLength(7)
+                            ->regex('/^#[0-9A-Fa-f]{6}$/')
                             ->hintIcon('heroicon-m-information-circle', tooltip: __('install.pwa_theme_color_hint')),
 
-                        Forms\Components\ColorPicker::make('pwa_background_color')
+                        Forms\Components\TextInput::make('pwa_background_color')
                             ->label('لون الخلفية')
+                            ->placeholder('#ffffff')
+                            ->maxLength(7)
+                            ->regex('/^#[0-9A-Fa-f]{6}$/')
                             ->hintIcon('heroicon-m-information-circle', tooltip: __('install.pwa_background_color_hint')),
                     ])->columns(['default' => 1, 'lg' => 2]),
 

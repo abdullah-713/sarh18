@@ -164,9 +164,11 @@ echo ""
 
 # ── Step 8: Cache config & routes (skip views — causes error) ─
 echo "▸ [8/8] Optimizing for production..."
+php artisan filament:assets
 php artisan config:cache
 # route:cache is FORBIDDEN — breaks Filament v3 closure-based routes
 php artisan event:cache
+echo "  ✓ Filament assets published"
 echo "  ✓ Config, events cached (routes + views NOT cached — intentional)"
 echo ""
 
