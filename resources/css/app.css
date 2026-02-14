@@ -16,7 +16,7 @@
 
 @layer components {
     .card {
-        @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
+        @apply bg-white rounded-2xl shadow-sm border border-gray-200 p-6;
     }
 
     .card-header {
@@ -24,11 +24,16 @@
     }
 
     .btn-primary {
-        @apply inline-flex items-center justify-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200;
+        @apply inline-flex items-center justify-center px-6 py-3 text-white font-medium rounded-xl focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200;
+        background-color: #FF8C00;
+    }
+
+    .btn-primary:hover {
+        background-color: #e07b00;
     }
 
     .btn-secondary {
-        @apply inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-all duration-200;
+        @apply inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-medium rounded-xl border border-gray-200 hover:bg-gray-50 transition-all duration-200;
     }
 
     .btn-danger {
@@ -36,27 +41,28 @@
     }
 
     .badge-success {
-        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800;
+        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200;
     }
 
     .badge-warning {
-        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800;
+        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200;
     }
 
     .badge-danger {
-        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800;
+        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200;
     }
 
     .input-field {
-        @apply w-full rounded-xl border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500;
+        @apply w-full rounded-xl border-gray-200 shadow-sm focus:border-orange-500 focus:ring-orange-500;
     }
 
     .stat-card {
-        @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col items-center justify-center text-center;
+        @apply bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex flex-col items-center justify-center text-center;
     }
 
     .stat-value {
-        @apply text-3xl font-bold text-emerald-600;
+        @apply text-3xl font-bold;
+        color: #FF8C00;
     }
 
     .stat-label {
@@ -64,10 +70,10 @@
     }
 
     .trophy-highlight {
-        @apply bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-400 rounded-lg p-3;
+        @apply bg-amber-50 border-l-4 border-amber-400 rounded-lg p-3;
     }
 
     .turtle-highlight {
-        @apply bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-400 rounded-lg p-3;
+        @apply bg-red-50 border-l-4 border-red-400 rounded-lg p-3;
     }
 }

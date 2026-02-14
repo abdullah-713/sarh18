@@ -86,6 +86,55 @@
         </div>
     </div>
 
+    {{-- Branches Map --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">🗺️ خريطة الفروع</h3>
+        </div>
+        <div id="deployment-branches-map" class="w-full" style="height: 350px; z-index: 1;"></div>
+        @assets
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        @endassets
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const el = document.getElementById('deployment-branches-map');
+            if (!el || el._leaflet_id) return;
+            const branches = @json($branches);
+            const validBranches = branches.filter(b => b.latitude && b.longitude);
+            if (validBranches.length === 0) return;
+            const map = L.map(el).setView([validBranches[0].latitude, validBranches[0].longitude], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(map);
+            const bounds = [];
+            validBranches.forEach(b => {
+                const marker = L.marker([b.latitude, b.longitude]).addTo(map);
+                marker.bindPopup(
+                    `<div style="text-align:right;font-family:Cairo,sans-serif;min-width:160px">` +
+                    `<strong>${b.name}</strong><br>` +
+                    `<span style="color:#666">${b.code}</span><br>` +
+                    `<span style="color:#059669">📍 ${b.latitude}, ${b.longitude}</span><br>` +
+                    `<span style="color:#FF8C00">🎯 نطاق: ${b.radius}م</span><br>` +
+                    `<span style="color:#2563eb">👥 ${b.employees} موظف</span>` +
+                    `</div>`
+                );
+                if (b.radius) {
+                    L.circle([b.latitude, b.longitude], {
+                        radius: b.radius,
+                        color: '#FF8C00',
+                        fillColor: '#FF8C00',
+                        fillOpacity: 0.12,
+                        weight: 2,
+                    }).addTo(map);
+                }
+                bounds.push([b.latitude, b.longitude]);
+            });
+            if (bounds.length > 1) map.fitBounds(bounds, { padding: [30, 30] });
+        });
+        </script>
+    </div>
+
     {{-- Branches Table --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
         <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
