@@ -127,26 +127,32 @@ class ProjectDataSeeder extends Seeder
         | 2. Super Admin — Level 10 God Mode (Abdullah)
         |----------------------------------------------------------------------
         */
-        $admin = User::updateOrCreate(
-            ['email' => 'abdullah@sarh.app'],
-            [
-                'name_ar'                => 'عبدالله',
-                'name_en'                => 'Abdullah',
-                'employee_id'            => 'emp001',
-                'password'               => $password,
-                'basic_salary'           => 45000,
-                'housing_allowance'      => 11250,
-                'transport_allowance'    => 3000,
-                'branch_id'              => $branchModels['SARH-HQ']->id,
-                'working_days_per_month' => 22,
-                'working_hours_per_day'  => 8,
-                'status'                 => 'active',
-                'employment_type'        => 'full_time',
-                'locale'                 => 'ar',
-                'timezone'               => 'Asia/Riyadh',
-                'total_points'           => 500,
-            ]
-        );
+        $admin = User::withTrashed()->where('email', 'abdullah@sarh.app')
+                     ->orWhere('employee_id', 'emp001')->first();
+        $adminData = [
+            'email'                  => 'abdullah@sarh.app',
+            'name_ar'                => 'عبدالله',
+            'name_en'                => 'Abdullah',
+            'employee_id'            => 'emp001',
+            'password'               => $password,
+            'basic_salary'           => 45000,
+            'housing_allowance'      => 11250,
+            'transport_allowance'    => 3000,
+            'branch_id'              => $branchModels['SARH-HQ']->id,
+            'working_days_per_month' => 22,
+            'working_hours_per_day'  => 8,
+            'status'                 => 'active',
+            'employment_type'        => 'full_time',
+            'locale'                 => 'ar',
+            'timezone'               => 'Asia/Riyadh',
+            'total_points'           => 500,
+        ];
+        if ($admin) {
+            $admin->restore();
+            $admin->update($adminData);
+        } else {
+            $admin = User::create($adminData);
+        }
         // security_level & is_super_admin are guarded — must forceFill
         $admin->forceFill(['security_level' => 10, 'is_super_admin' => true])->save();
 
@@ -199,26 +205,32 @@ class ProjectDataSeeder extends Seeder
         ];
 
         foreach ($employees as [$nameAr, $nameEn, $email, $empId, $salary, $branchCode]) {
-            $user = User::updateOrCreate(
-                ['email' => $email],
-                [
-                    'name_ar'                => $nameAr,
-                    'name_en'                => $nameEn,
-                    'employee_id'            => $empId,
-                    'password'               => $password,
-                    'basic_salary'           => $salary,
-                    'housing_allowance'      => round($salary * 0.25),
-                    'transport_allowance'    => 1500,
-                    'branch_id'              => $branchModels[$branchCode]->id,
-                    'working_days_per_month' => 22,
-                    'working_hours_per_day'  => 8,
-                    'status'                 => 'active',
-                    'employment_type'        => 'full_time',
-                    'locale'                 => 'ar',
-                    'timezone'               => 'Asia/Riyadh',
-                    'total_points'           => 0,
-                ]
-            );
+            $user = User::withTrashed()->where('email', $email)
+                        ->orWhere('employee_id', $empId)->first();
+            $userData = [
+                'email'                  => $email,
+                'name_ar'                => $nameAr,
+                'name_en'                => $nameEn,
+                'employee_id'            => $empId,
+                'password'               => $password,
+                'basic_salary'           => $salary,
+                'housing_allowance'      => round($salary * 0.25),
+                'transport_allowance'    => 1500,
+                'branch_id'              => $branchModels[$branchCode]->id,
+                'working_days_per_month' => 22,
+                'working_hours_per_day'  => 8,
+                'status'                 => 'active',
+                'employment_type'        => 'full_time',
+                'locale'                 => 'ar',
+                'timezone'               => 'Asia/Riyadh',
+                'total_points'           => 0,
+            ];
+            if ($user) {
+                $user->restore();
+                $user->update($userData);
+            } else {
+                $user = User::create($userData);
+            }
             // security_level is guarded — must forceFill
             $user->forceFill(['security_level' => 1, 'is_super_admin' => false])->save();
         }
